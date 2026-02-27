@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: al_imran_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password_123
+      POSTGRES_DB: al_imran_admin
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: al_imran_api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://admin:admin_password_123@postgres:5432/al_imran_admin"
+      JWT_SECRET_KEY: "your-super-secret-key-change-this-in-production-min-32-chars-12345"
+      JWT_ALGORITHM: "HS256"
+      JWT_EXPIRATION_HOURS: 24
+      APP_NAME: "AL Imran Ecommerce API"
+      DEBUG: "False"
+      ENVIRONMENT: "production"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    networks:
+      - ecommerce_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: al_imran_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: "http://api:8000/api/v1"
+      NEXT_PUBLIC_WHATSAPP_NUMBER: "+923000000000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - ecommerce_network
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce_network:
+    driver: bridge
