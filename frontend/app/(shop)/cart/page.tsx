@@ -2,30 +2,81 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store';
 import { formatPKR } from '@/lib/utils';
-import { Trash2, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { Trash2, ShoppingCart, Plus, Minus, AlertCircle } from 'lucide-react';
+
+interface FormErrors {
+  customerName?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+}
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clear, total, setCustomerInfo, customerName, phone, address, city } = useCartStore();
+  const router = useRouter();
+  const { items, removeItem, updateQuantity, clear, total, setCustomerInfo, customerName, phone, address, city, notes } = useCartStore();
   const [showCheckoutForm, setShowCheckoutForm] = useState(false);
   const [formData, setFormData] = useState({
     customerName: customerName || '',
     phone: phone || '',
     address: address || '',
     city: city || '',
-    notes: '',
+    notes: notes || '',
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const cartTotal = total();
 
+  const validate = (data: typeof formData): FormErrors => {
+    const newErrors: FormErrors = {};
+    if (!data.customerName.trim()) {
+      newErrors.customerName = 'Full name is required';
+    }
+    if (!data.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^(\+92|0)[0-9]{9,10}$/.test(data.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Enter a valid Pakistani phone number (e.g. 03001234567)';
+    }
+    if (!data.address.trim()) {
+      newErrors.address = 'Delivery address is required';
+    }
+    if (!data.city.trim()) {
+      newErrors.city = 'City is required';
+    }
+    return newErrors;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    // Re-validate touched fields live
+    if (touched[name]) {
+      const newErrors = validate(updated);
+      setErrors((prev) => ({ ...prev, [name]: newErrors[name as keyof FormErrors] }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const newErrors = validate(formData);
+    setErrors((prev) => ({ ...prev, [name]: newErrors[name as keyof FormErrors] }));
   };
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
+    // Mark all fields as touched
+    setTouched({ customerName: true, phone: true, address: true, city: true });
+    const validationErrors = validate(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     setCustomerInfo({
       name: formData.customerName,
       phone: formData.phone,
@@ -33,8 +84,7 @@ export default function CartPage() {
       city: formData.city,
       notes: formData.notes,
     });
-    // Proceed to checkout page
-    window.location.href = '/checkout';
+    router.push('/checkout');
   };
 
   if (items.length === 0) {
@@ -65,9 +115,9 @@ export default function CartPage() {
             <div className="space-y-4">
               {items.map((item) => (
                 <div key={item.product.id} className="card flex gap-4">
-                  {item.product.image && (
+                  {item.product.image_url && (
                     <img
-                      src={item.product.image}
+                      src={item.product.image_url}
                       alt={item.product.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
@@ -146,7 +196,7 @@ export default function CartPage() {
                 onClick={() => setShowCheckoutForm(!showCheckoutForm)}
                 className="btn btn-primary w-full mb-3"
               >
-                Proceed to Checkout
+                {showCheckoutForm ? 'Hide Details' : 'Proceed to Checkout'}
               </button>
 
               <Link href="/products" className="btn btn-secondary w-full text-center text-sm">
@@ -155,55 +205,100 @@ export default function CartPage() {
 
               {/* Checkout Form */}
               {showCheckoutForm && (
-                <form onSubmit={handleCheckout} className="mt-6 pt-6 border-t border-border space-y-4">
+                <form onSubmit={handleCheckout} noValidate className="mt-6 pt-6 border-t border-border space-y-4">
+                  <p className="text-sm text-muted mb-4">
+                    Enter your delivery details to continue.
+                  </p>
+
+                  {/* Full Name */}
                   <div>
-                    <label className="form-label">Full Name *</label>
+                    <label className="form-label">
+                      Full Name <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="text"
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleInputChange}
-                      className="input"
-                      required
+                      onBlur={handleBlur}
+                      className={`input ${errors.customerName ? 'border-danger focus:border-danger' : ''}`}
+                      placeholder="e.g. Ahmed Khan"
                     />
+                    {errors.customerName && (
+                      <p className="flex items-center gap-1 text-danger text-xs mt-1">
+                        <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                        {errors.customerName}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Phone */}
                   <div>
-                    <label className="form-label">Phone *</label>
+                    <label className="form-label">
+                      Phone Number <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="input"
-                      required
+                      onBlur={handleBlur}
+                      className={`input ${errors.phone ? 'border-danger focus:border-danger' : ''}`}
+                      placeholder="e.g. 03001234567"
                     />
+                    {errors.phone && (
+                      <p className="flex items-center gap-1 text-danger text-xs mt-1">
+                        <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                        {errors.phone}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Address */}
                   <div>
-                    <label className="form-label">Address *</label>
+                    <label className="form-label">
+                      Delivery Address <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
-                      className="input"
-                      required
+                      onBlur={handleBlur}
+                      className={`input ${errors.address ? 'border-danger focus:border-danger' : ''}`}
+                      placeholder="House no., Street, Area"
                     />
+                    {errors.address && (
+                      <p className="flex items-center gap-1 text-danger text-xs mt-1">
+                        <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                        {errors.address}
+                      </p>
+                    )}
                   </div>
 
+                  {/* City */}
                   <div>
-                    <label className="form-label">City *</label>
+                    <label className="form-label">
+                      City <span className="text-danger">*</span>
+                    </label>
                     <input
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
-                      className="input"
-                      required
+                      onBlur={handleBlur}
+                      className={`input ${errors.city ? 'border-danger focus:border-danger' : ''}`}
+                      placeholder="e.g. Lahore"
                     />
+                    {errors.city && (
+                      <p className="flex items-center gap-1 text-danger text-xs mt-1">
+                        <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                        {errors.city}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Notes */}
                   <div>
                     <label className="form-label">Special Notes</label>
                     <textarea
@@ -212,6 +307,7 @@ export default function CartPage() {
                       onChange={handleInputChange}
                       className="input"
                       rows={3}
+                      placeholder="Any special instructions for delivery..."
                     />
                   </div>
 

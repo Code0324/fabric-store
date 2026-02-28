@@ -26,9 +26,9 @@ export default function ProductCard({ product, showActions = true }: ProductCard
       <div className="card group h-full hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col">
         {/* Image Container */}
         <div className="relative overflow-hidden rounded-lg mb-4 bg-surface h-64 flex items-center justify-center">
-          {product.image ? (
+          {product.image_url ? (
             <img
-              src={product.image}
+              src={product.image_url}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

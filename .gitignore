@@ -54,3 +54,12 @@ ehthumbs.db
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+
+# Python
+backend/venv/
+backend/backend.egg-info/
+backend/data/
+__pycache__/
+*.py[cod]
+*.sqlite
+*.db

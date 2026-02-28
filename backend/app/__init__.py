@@ -1,0 +1,2 @@
+# Al Imran Fabrics Backend
+__version__ = "1.0.0"

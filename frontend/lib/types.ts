@@ -22,7 +22,7 @@ export interface Product {
   price: number;
   compare_price?: number;
   stock: number;
-  image?: string;
+  image_url?: string;
   is_featured: boolean;
   is_active: boolean;
   created_at: string;

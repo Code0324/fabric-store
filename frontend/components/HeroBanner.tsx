@@ -2,11 +2,23 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function HeroBanner() {
   return (
-    <div className="relative overflow-hidden bg-dark-gradient min-h-[600px] md:min-h-[700px] flex items-center justify-center">
-      {/* Animated Background Pattern */}
+    <div className="relative overflow-hidden min-h-[600px] md:min-h-[700px] flex items-center justify-center bg-dark-gradient">
+      {/* Hero Image */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/images/hero-eid.png"
+          alt="Hero Banner"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+
+      {/* Optional: Animated Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-72 h-72 bg-gold rounded-full mix-blend-screen animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-gold-dark rounded-full mix-blend-screen animate-pulse delay-700"></div>

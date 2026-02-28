@@ -1,0 +1,848 @@
+{
+  "system": {
+    "name": "Multi-Agent System for Al Imran Fabrics E-Commerce",
+    "version": "1.0.0",
+    "created_at": "2026-02-28T00:00:00Z",
+    "description": "Coordinated agent system for full-stack development with monitoring and quality gates"
+  },
+  "agents": [
+    {
+      "id": "frontend-expert-001",
+      "name": "Frontend Expert Agent",
+      "role": "UI/UX Design & Frontend Development",
+      "status": "active",
+      "primary_tech_stack": [
+        "Next.js 14+",
+        "React 18+",
+        "TypeScript",
+        "Tailwind CSS",
+        "React Hook Form"
+      ],
+      "responsibilities": [
+        "Component design and creation",
+        "Page development",
+        "Hero sections and banners",
+        "Product listings and filtering",
+        "Form validation",
+        "Responsive design",
+        "Performance optimization",
+        "Accessibility compliance"
+      ],
+      "skills": {
+        "core": {
+          "React/Next.js": 5,
+          "TypeScript": 4,
+          "Tailwind CSS": 5,
+          "Responsive Design": 5,
+          "JavaScript": 4,
+          "HTML5": 5,
+          "CSS3": 4
+        },
+        "supporting": {
+          "API Integration": 3,
+          "Testing": 3,
+          "Performance Optimization": 3,
+          "Git": 2,
+          "Docker": 1
+        }
+      },
+      "mcp_server": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {
+            "enabled": true,
+            "min": 2,
+            "max": 6
+          }
+        },
+        "storage": {
+          "size_gb": 20,
+          "type": "SSD",
+          "breakdown": {
+            "node_modules": 5,
+            "build_artifacts": 8,
+            "design_assets": 5,
+            "temp_files": 2
+          }
+        },
+        "networking": {
+          "inbound_ports": [3000, 3001, 3002, 9229],
+          "outbound": ["backend:8000", "github.com:443", "registry.npmjs.org:443"],
+          "min_bandwidth_mbps": 100
+        },
+        "base_image": "node:20-alpine",
+        "volume_mounts": [
+          {
+            "container_path": "/app",
+            "description": "Project root"
+          },
+          {
+            "container_path": "/app/node_modules",
+            "description": "Dependency cache"
+          },
+          {
+            "container_path": "/app/.next",
+            "description": "Build cache"
+          },
+          {
+            "container_path": "/logs/frontend",
+            "description": "Application logs"
+          }
+        ]
+      },
+      "deliverables": [
+        "Component library",
+        "Page templates",
+        "Style guide",
+        "Performance reports",
+        "Accessibility audit"
+      ],
+      "success_metrics": {
+        "lighthouse_score": 90,
+        "component_reusability": 80,
+        "test_coverage": 80,
+        "accessibility_score": 95
+      },
+      "dependencies": ["backend-expert-001"],
+      "quality_gates": [
+        "QG-001-Commit",
+        "QG-002-PR",
+        "QG-003-PreDeploy",
+        "QG-004-PostDeploy"
+      ],
+      "communication_endpoints": {
+        "status": "http://frontend:8080/api/v1/status",
+        "metrics": "http://frontend:8080/api/v1/metrics",
+        "health": "http://frontend:3000/api/health"
+      },
+      "notification_channels": ["slack", "email", "dashboard"],
+      "escalation_contacts": [
+        {
+          "name": "Frontend Lead",
+          "email": "frontend@alimran.dev",
+          "slack": "@frontend-lead",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "id": "backend-expert-001",
+      "name": "Backend Expert Agent",
+      "role": "API & Database Development",
+      "status": "active",
+      "primary_tech_stack": [
+        "FastAPI",
+        "Python 3.12+",
+        "SQLAlchemy",
+        "PostgreSQL",
+        "Pydantic"
+      ],
+      "responsibilities": [
+        "RESTful API design",
+        "Database schema design",
+        "Authentication system",
+        "CRUD operations",
+        "Business logic",
+        "Error handling",
+        "Performance optimization",
+        "Data validation"
+      ],
+      "skills": {
+        "core": {
+          "FastAPI": 5,
+          "Python": 5,
+          "SQLAlchemy": 4,
+          "PostgreSQL": 4,
+          "REST APIs": 5,
+          "Authentication": 4,
+          "Database Design": 4
+        },
+        "supporting": {
+          "Caching": 3,
+          "Docker": 3,
+          "Testing": 4,
+          "Git": 2,
+          "AWS": 2
+        }
+      },
+      "mcp_server": {
+        "compute": {
+          "vcpu": 8,
+          "memory_gb": 16,
+          "auto_scale": {
+            "enabled": true,
+            "min": 4,
+            "max": 12
+          }
+        },
+        "storage": {
+          "size_gb": 50,
+          "type": "SSD",
+          "breakdown": {
+            "postgresql_data": 20,
+            "python_cache": 5,
+            "redis_persistence": 3,
+            "logs": 10,
+            "temp_files": 5,
+            "backups": 7
+          }
+        },
+        "networking": {
+          "inbound_ports": [8000, 8001, 9229],
+          "outbound": ["postgres:5432", "redis:6379", "s3.amazonaws.com:443"],
+          "min_bandwidth_mbps": 200
+        },
+        "base_image": "python:3.12-slim",
+        "volume_mounts": [
+          {
+            "container_path": "/app",
+            "description": "Project root"
+          },
+          {
+            "container_path": "/data/postgres",
+            "description": "PostgreSQL data"
+          },
+          {
+            "container_path": "/data/redis",
+            "description": "Redis data"
+          },
+          {
+            "container_path": "/data/backups",
+            "description": "Database backups"
+          },
+          {
+            "container_path": "/logs/backend",
+            "description": "Application logs"
+          }
+        ]
+      },
+      "deliverables": [
+        "API specification (OpenAPI)",
+        "Database schema",
+        "Authentication system",
+        "CRUD endpoints",
+        "Performance reports"
+      ],
+      "success_metrics": {
+        "api_response_time_ms": 200,
+        "db_query_time_ms": 50,
+        "test_coverage": 85,
+        "security_vulnerabilities": 0
+      },
+      "dependencies": [],
+      "quality_gates": [
+        "QG-001-Commit",
+        "QG-002-PR",
+        "QG-003-PreDeploy",
+        "QG-004-PostDeploy"
+      ],
+      "communication_endpoints": {
+        "status": "http://backend:8080/api/v1/status",
+        "metrics": "http://backend:8080/api/v1/metrics",
+        "health": "http://backend:8000/health",
+        "docs": "http://backend:8000/docs"
+      },
+      "notification_channels": ["slack", "email", "dashboard"],
+      "escalation_contacts": [
+        {
+          "name": "Backend Lead",
+          "email": "backend@alimran.dev",
+          "slack": "@backend-lead",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "id": "git-expert-001",
+      "name": "Git Expert Agent",
+      "role": "Version Control & Deployment",
+      "status": "active",
+      "primary_tech_stack": [
+        "Git",
+        "GitHub",
+        "GitHub Actions",
+        "Docker",
+        "Bash"
+      ],
+      "responsibilities": [
+        "Repository management",
+        "Branching strategy",
+        "Pull request workflows",
+        "CI/CD pipeline",
+        "Automated testing",
+        "Deployment automation",
+        "Release management",
+        "Rollback procedures"
+      ],
+      "skills": {
+        "core": {
+          "Git": 5,
+          "GitHub": 4,
+          "CI/CD": 4,
+          "Deployment": 4,
+          "Bash/Shell": 4,
+          "Docker": 3
+        },
+        "supporting": {
+          "Infrastructure as Code": 3,
+          "Security": 3,
+          "Monitoring": 3,
+          "Performance": 2
+        }
+      },
+      "mcp_server": {
+        "compute": {
+          "vcpu": 2,
+          "memory_gb": 4,
+          "auto_scale": {
+            "enabled": false,
+            "fixed": true
+          }
+        },
+        "storage": {
+          "size_gb": 10,
+          "type": "SSD",
+          "breakdown": {
+            "git_mirror": 4,
+            "workflow_artifacts": 3,
+            "deployment_artifacts": 2,
+            "logs": 1
+          }
+        },
+        "networking": {
+          "inbound_ports": [443],
+          "outbound": ["github.com:443", "docker.io:443"],
+          "min_bandwidth_mbps": 50
+        },
+        "base_image": "ubuntu:22.04",
+        "volume_mounts": [
+          {
+            "container_path": "/repos",
+            "description": "Repository mirror"
+          },
+          {
+            "container_path": "/artifacts",
+            "description": "Build artifacts"
+          },
+          {
+            "container_path": "/scripts",
+            "description": "Automation scripts"
+          },
+          {
+            "container_path": "/logs/git",
+            "description": "Operation logs"
+          }
+        ]
+      },
+      "deliverables": [
+        "Git workflow documentation",
+        "CI/CD pipeline configuration",
+        "Deployment scripts",
+        "Release notes",
+        "Disaster recovery runbooks"
+      ],
+      "success_metrics": {
+        "mean_time_to_merge_hours": 24,
+        "ci_pipeline_success_rate": 95,
+        "deployment_frequency_daily": 1,
+        "mean_time_to_recovery_minutes": 15
+      },
+      "dependencies": ["frontend-expert-001", "backend-expert-001"],
+      "quality_gates": [
+        "QG-002-PR",
+        "QG-003-PreDeploy",
+        "QG-004-PostDeploy"
+      ],
+      "communication_endpoints": {
+        "status": "http://git:8080/api/v1/status",
+        "deploy": "http://git:8080/api/v1/git/deploy",
+        "rollback": "http://git:8080/api/v1/git/rollback"
+      },
+      "notification_channels": ["slack", "email", "github"],
+      "escalation_contacts": [
+        {
+          "name": "DevOps Lead",
+          "email": "devops@alimran.dev",
+          "slack": "@devops-lead",
+          "severity": "critical"
+        }
+      ]
+    },
+    {
+      "id": "monitor-001",
+      "name": "Monitoring & Inspector Agent",
+      "role": "Quality Assurance & System Monitoring",
+      "status": "active",
+      "primary_tech_stack": [
+        "Prometheus",
+        "Grafana",
+        "Jest/pytest",
+        "Playwright",
+        "SonarQube",
+        "Sentry"
+      ],
+      "responsibilities": [
+        "Task tracking",
+        "Code quality analysis",
+        "Test execution",
+        "Performance monitoring",
+        "Error logging",
+        "Security scanning",
+        "Health monitoring",
+        "Quality gate enforcement",
+        "Incident reporting"
+      ],
+      "skills": {
+        "core": {
+          "Testing Frameworks": 5,
+          "Code Quality": 4,
+          "Logging": 4,
+          "Monitoring Tools": 4,
+          "Debugging": 4,
+          "Performance Analysis": 4
+        },
+        "supporting": {
+          "Security Scanning": 3,
+          "CI/CD Verification": 3,
+          "Documentation": 3,
+          "SQL": 3
+        }
+      },
+      "mcp_server": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {
+            "enabled": true,
+            "min": 2,
+            "max": 8
+          }
+        },
+        "storage": {
+          "size_gb": 30,
+          "type": "SSD",
+          "breakdown": {
+            "prometheus_metrics": 10,
+            "log_aggregation": 12,
+            "reports": 5,
+            "temp_data": 3
+          }
+        },
+        "networking": {
+          "inbound_ports": [9090, 5601, 3000, 9229],
+          "outbound": ["frontend:8080", "backend:8080", "git:8080"],
+          "min_bandwidth_mbps": 100
+        },
+        "base_image": "ubuntu:22.04",
+        "volume_mounts": [
+          {
+            "container_path": "/prometheus",
+            "description": "Metrics storage"
+          },
+          {
+            "container_path": "/opensearch",
+            "description": "Log storage"
+          },
+          {
+            "container_path": "/grafana",
+            "description": "Dashboard configuration"
+          },
+          {
+            "container_path": "/reports",
+            "description": "Test & security reports"
+          },
+          {
+            "container_path": "/logs/monitor",
+            "description": "Monitoring system logs"
+          }
+        ]
+      },
+      "deliverables": [
+        "Daily health reports",
+        "Code quality scorecards",
+        "Test coverage reports",
+        "Performance dashboards",
+        "Security vulnerability reports",
+        "Incident logs"
+      ],
+      "success_metrics": {
+        "issue_detection_minutes": 5,
+        "false_positive_rate_percent": 5,
+        "test_coverage": 85,
+        "security_scanning_coverage": 100
+      },
+      "dependencies": ["frontend-expert-001", "backend-expert-001", "git-expert-001"],
+      "quality_gates": [
+        "QG-001-Commit",
+        "QG-002-PR",
+        "QG-003-PreDeploy",
+        "QG-004-PostDeploy"
+      ],
+      "communication_endpoints": {
+        "status": "http://monitor:8080/api/v1/status",
+        "metrics": "http://monitor:9090",
+        "logs": "http://monitor:5601",
+        "dashboard": "http://monitor:3000",
+        "reports": "http://monitor:8080/api/v1/reports"
+      },
+      "notification_channels": ["slack", "email", "sentry", "pagerduty"],
+      "escalation_contacts": [
+        {
+          "name": "QA Lead",
+          "email": "qa@alimran.dev",
+          "slack": "@qa-lead",
+          "severity": "high"
+        },
+        {
+          "name": "Incident Commander",
+          "email": "incident@alimran.dev",
+          "slack": "@incident-commander",
+          "severity": "critical"
+        }
+      ]
+    }
+  ],
+  "shared_resources": [
+    {
+      "id": "postgres-primary",
+      "name": "PostgreSQL Database",
+      "type": "database",
+      "compute": {
+        "vcpu": 4,
+        "memory_gb": 8
+      },
+      "storage": {
+        "size_gb": 100,
+        "type": "SSD",
+        "redundancy": "RAID1"
+      },
+      "access": ["backend-expert-001"],
+      "port": 5432,
+      "backup_strategy": {
+        "full": "daily at 02:00",
+        "incremental": "every 6 hours",
+        "retention_days": 30
+      }
+    },
+    {
+      "id": "redis-cache",
+      "name": "Redis Cache",
+      "type": "cache",
+      "compute": {
+        "vcpu": 2,
+        "memory_gb": 4
+      },
+      "storage": {
+        "size_gb": 10,
+        "type": "SSD"
+      },
+      "access": ["backend-expert-001"],
+      "port": 6379,
+      "persistence": {
+        "enabled": true,
+        "method": "AOF"
+      }
+    },
+    {
+      "id": "s3-storage",
+      "name": "S3-Compatible Object Storage",
+      "type": "storage",
+      "storage": {
+        "size_gb": 50,
+        "breakdown": {
+          "product_images": 10,
+          "user_uploads": 5,
+          "backups": 20,
+          "logs": 5
+        }
+      },
+      "access": ["backend-expert-001", "frontend-expert-001"],
+      "protocol": "HTTP/HTTPS"
+    }
+  ],
+  "quality_gates": [
+    {
+      "id": "QG-001-Commit",
+      "name": "Code Commit Quality Gate",
+      "trigger": "on git commit",
+      "checks": [
+        {
+          "name": "Linting",
+          "tool": "ESLint/Pylint",
+          "required": true,
+          "timeout_seconds": 30
+        },
+        {
+          "name": "Code Formatting",
+          "tool": "Prettier",
+          "required": true,
+          "timeout_seconds": 30
+        },
+        {
+          "name": "Type Checking",
+          "tool": "TypeScript/mypy",
+          "required": true,
+          "timeout_seconds": 60
+        },
+        {
+          "name": "Unit Tests",
+          "tool": "Jest/pytest",
+          "required": true,
+          "timeout_seconds": 300
+        },
+        {
+          "name": "Secret Detection",
+          "tool": "detect-secrets",
+          "required": true,
+          "timeout_seconds": 30
+        }
+      ],
+      "pass_criteria": "All checks must pass",
+      "fail_action": "Block commit"
+    },
+    {
+      "id": "QG-002-PR",
+      "name": "Pull Request Quality Gate",
+      "trigger": "on pull request",
+      "checks": [
+        {
+          "name": "All QG-001 Checks",
+          "required": true
+        },
+        {
+          "name": "Integration Tests",
+          "tool": "Jest/pytest",
+          "required": true,
+          "timeout_seconds": 600
+        },
+        {
+          "name": "E2E Tests",
+          "tool": "Playwright",
+          "required": false,
+          "timeout_seconds": 900
+        },
+        {
+          "name": "Code Coverage",
+          "tool": "Coverage.py/Jest",
+          "required": true,
+          "threshold": 85,
+          "timeout_seconds": 120
+        },
+        {
+          "name": "Performance Tests",
+          "tool": "Lighthouse",
+          "required": true,
+          "threshold": 90,
+          "timeout_seconds": 300
+        },
+        {
+          "name": "Security Scan",
+          "tool": "Snyk/OWASP",
+          "required": true,
+          "timeout_seconds": 300
+        },
+        {
+          "name": "Accessibility Tests",
+          "tool": "axe-core",
+          "required": true,
+          "timeout_seconds": 120
+        },
+        {
+          "name": "Code Review",
+          "required": true,
+          "min_approvals": 1
+        }
+      ],
+      "pass_criteria": "All checks must pass + code review approved",
+      "fail_action": "Block merge"
+    },
+    {
+      "id": "QG-003-PreDeploy",
+      "name": "Pre-Deployment Quality Gate",
+      "trigger": "before merge to main",
+      "checks": [
+        {
+          "name": "All QG-002 Checks",
+          "required": true
+        },
+        {
+          "name": "Build Artifact Creation",
+          "required": true,
+          "timeout_seconds": 600
+        },
+        {
+          "name": "Docker Image Build",
+          "required": true,
+          "timeout_seconds": 600
+        },
+        {
+          "name": "Database Migrations",
+          "required": true,
+          "timeout_seconds": 300
+        },
+        {
+          "name": "Environment Configuration",
+          "required": true,
+          "timeout_seconds": 60
+        },
+        {
+          "name": "Deployment Script Test",
+          "required": true,
+          "timeout_seconds": 300
+        }
+      ],
+      "pass_criteria": "All checks must pass",
+      "fail_action": "Prevent deployment"
+    },
+    {
+      "id": "QG-004-PostDeploy",
+      "name": "Post-Deployment Monitoring Gate",
+      "trigger": "after deployment",
+      "duration_minutes": 60,
+      "checks": [
+        {
+          "name": "Application Health Check",
+          "required": true,
+          "interval_seconds": 30
+        },
+        {
+          "name": "Error Rate Monitor",
+          "required": true,
+          "threshold": 0.5,
+          "unit": "percent"
+        },
+        {
+          "name": "Performance Degradation",
+          "required": true,
+          "threshold": 5,
+          "unit": "percent"
+        },
+        {
+          "name": "Database Connection Stability",
+          "required": true
+        },
+        {
+          "name": "Security Vulnerability Scan",
+          "required": true
+        },
+        {
+          "name": "API Response Time (p95)",
+          "required": true,
+          "threshold": 200,
+          "unit": "milliseconds"
+        }
+      ],
+      "pass_criteria": "All checks must pass for 60 minutes",
+      "fail_action": "Auto-rollback to previous version"
+    }
+  ],
+  "communication_events": [
+    {
+      "event_type": "code.commit",
+      "subscribers": ["monitor-001", "git-expert-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "code.push",
+      "subscribers": ["git-expert-001", "monitor-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "test.started",
+      "subscribers": ["monitor-001"],
+      "priority": "low"
+    },
+    {
+      "event_type": "test.completed",
+      "subscribers": ["monitor-001", "git-expert-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "test.failed",
+      "subscribers": ["monitor-001", "git-expert-001"],
+      "priority": "high"
+    },
+    {
+      "event_type": "deployment.started",
+      "subscribers": ["monitor-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "deployment.completed",
+      "subscribers": ["monitor-001", "frontend-expert-001", "backend-expert-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "deployment.failed",
+      "subscribers": ["monitor-001", "git-expert-001"],
+      "priority": "critical"
+    },
+    {
+      "event_type": "error.detected",
+      "subscribers": ["monitor-001"],
+      "priority": "high"
+    },
+    {
+      "event_type": "security.vulnerability",
+      "subscribers": ["monitor-001"],
+      "priority": "critical"
+    },
+    {
+      "event_type": "quality.gate.passed",
+      "subscribers": ["git-expert-001"],
+      "priority": "medium"
+    },
+    {
+      "event_type": "quality.gate.failed",
+      "subscribers": ["monitor-001"],
+      "priority": "high"
+    }
+  ],
+  "status_report_interval_minutes": 15,
+  "health_check_interval_seconds": 30,
+  "alert_rules": {
+    "agent_downtime": {
+      "threshold_minutes": 5,
+      "severity": "critical",
+      "notify": ["slack", "pagerduty"]
+    },
+    "high_error_rate": {
+      "threshold_percent": 1,
+      "severity": "high",
+      "notify": ["slack", "email"]
+    },
+    "low_test_coverage": {
+      "threshold_percent": 80,
+      "severity": "medium",
+      "notify": ["slack"]
+    },
+    "security_vulnerability": {
+      "severity": "critical",
+      "notify": ["slack", "pagerduty", "email"]
+    }
+  },
+  "deployment": {
+    "environments": [
+      {
+        "name": "development",
+        "agents": ["frontend-expert-001", "backend-expert-001"],
+        "auto_deploy": true,
+        "quality_gates": ["QG-001-Commit"]
+      },
+      {
+        "name": "staging",
+        "agents": ["frontend-expert-001", "backend-expert-001"],
+        "auto_deploy": false,
+        "quality_gates": ["QG-001-Commit", "QG-002-PR", "QG-003-PreDeploy"]
+      },
+      {
+        "name": "production",
+        "agents": ["frontend-expert-001", "backend-expert-001"],
+        "auto_deploy": false,
+        "quality_gates": ["QG-001-Commit", "QG-002-PR", "QG-003-PreDeploy", "QG-004-PostDeploy"],
+        "requires_approval": true
+      }
+    ]
+  }
+}

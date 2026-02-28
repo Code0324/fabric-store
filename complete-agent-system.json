@@ -1,0 +1,2145 @@
+{
+  "system": {
+    "name": "Autonomous AI Agent System",
+    "version": "3.0.0",
+    "project": "Al Imran Fabrics E-Commerce Platform",
+    "description": "Complete multi-agent system for full-stack development automation",
+    "created_at": "2026-02-28T00:00:00Z",
+    "framework_compatibility": ["LangChain", "AutoGPT", "CrewAI", "AgentFramework"],
+    "total_agents": 10,
+    "status": "production-ready",
+    "deployment_mode": "distributed",
+    "communication_model": "event-driven-async"
+  },
+  "orchestrator_agent": {
+    "agent_id": "orch-001",
+    "agent_name": "Master Orchestrator",
+    "type": "orchestrator",
+    "role": "Central coordinator and task manager for all agents",
+    "priority": 1,
+    "max_concurrent_tasks": 100,
+    "description": "Manages workflow execution, task assignment, dependency resolution, agent supervision, and conflict resolution",
+    "core_responsibilities": [
+      "Create and schedule workflows",
+      "Assign tasks to agents based on skills and availability",
+      "Manage task dependencies and execution order",
+      "Monitor all agents for health and performance",
+      "Resolve conflicts between concurrent tasks",
+      "Handle errors and implement recovery strategies",
+      "Generate system status reports",
+      "Enforce quality gates and approval workflows"
+    ],
+    "core_competencies": {
+      "workflow_orchestration": {
+        "level": 5,
+        "description": "Expert in creating, scheduling, and managing complex workflows",
+        "capabilities": [
+          "Create DAG-based workflows",
+          "Schedule tasks with cron expressions",
+          "Handle parallel and sequential task execution",
+          "Implement conditional branching",
+          "Manage workflow state and context"
+        ]
+      },
+      "dependency_management": {
+        "level": 5,
+        "description": "Expert in resolving and managing task dependencies",
+        "capabilities": [
+          "Detect circular dependencies",
+          "Resolve dependency chains",
+          "Implement topological sorting",
+          "Manage prerequisite checking",
+          "Handle dependency versioning"
+        ]
+      },
+      "agent_supervision": {
+        "level": 5,
+        "description": "Expert in monitoring and managing agent behavior",
+        "capabilities": [
+          "Monitor agent health metrics",
+          "Detect agent failures and anomalies",
+          "Implement auto-recovery mechanisms",
+          "Balance workload across agents",
+          "Enforce agent SLAs"
+        ]
+      },
+      "conflict_resolution": {
+        "level": 4,
+        "description": "Advanced in resolving conflicts between agents",
+        "capabilities": [
+          "Detect resource conflicts",
+          "Implement locking mechanisms",
+          "Queue conflicting tasks",
+          "Prioritize conflicting operations",
+          "Implement consensus protocols"
+        ]
+      }
+    },
+    "actions": [
+      {
+        "action_id": "ORCH-001",
+        "action_name": "CreateWorkflow",
+        "description": "Create and initialize a new workflow with tasks and dependencies",
+        "category": "workflow_management",
+        "input_schema": {
+          "workflow_id": {"type": "string", "required": true},
+          "workflow_name": {"type": "string", "required": true},
+          "description": {"type": "string", "required": false},
+          "tasks": {
+            "type": "array",
+            "items": {
+              "task_id": "string",
+              "task_name": "string",
+              "agent_id": "string",
+              "action_id": "string",
+              "priority": "low|medium|high|critical",
+              "estimated_duration": "integer (seconds)"
+            },
+            "required": true
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "task_id": "string",
+              "depends_on": ["array of task_ids"]
+            },
+            "required": false
+          },
+          "schedule": {"type": "string", "format": "cron", "required": false},
+          "timeout": {"type": "integer", "description": "workflow timeout in seconds", "required": false}
+        },
+        "output_schema": {
+          "workflow_id": "string",
+          "status": "created|error",
+          "message": "string",
+          "task_count": "integer",
+          "execution_plan": "object"
+        }
+      },
+      {
+        "action_id": "ORCH-002",
+        "action_name": "AssignTask",
+        "description": "Assign a task to the most suitable agent based on skills and current load",
+        "category": "task_management",
+        "input_schema": {
+          "task_id": {"type": "string", "required": true},
+          "task_name": {"type": "string", "required": true},
+          "required_skills": {"type": "array", "items": "string", "required": true},
+          "priority": {"type": "string", "enum": ["low", "medium", "high", "critical"], "required": true},
+          "deadline": {"type": "string", "format": "ISO 8601", "required": false},
+          "task_parameters": {"type": "object", "required": false},
+          "estimated_duration": {"type": "integer", "description": "seconds", "required": false}
+        },
+        "output_schema": {
+          "task_id": "string",
+          "assigned_to": "agent_id",
+          "status": "assigned|queued|error",
+          "estimated_start": "ISO 8601 timestamp",
+          "estimated_completion": "ISO 8601 timestamp",
+          "assignment_reason": "string"
+        }
+      },
+      {
+        "action_id": "ORCH-003",
+        "action_name": "MonitorAgentHealth",
+        "description": "Check health status and performance metrics of all agents",
+        "category": "monitoring",
+        "input_schema": {
+          "agent_ids": {"type": "array", "items": "string", "description": "array of agent_ids or ['all']", "required": true},
+          "check_type": {"type": "string", "enum": ["basic", "comprehensive", "deep"], "required": false, "default": "basic"}
+        },
+        "output_schema": {
+          "timestamp": "ISO 8601",
+          "agents": [
+            {
+              "agent_id": "string",
+              "status": "healthy|degraded|unhealthy|offline",
+              "uptime_seconds": "integer",
+              "cpu_usage_percent": "number",
+              "memory_usage_percent": "number",
+              "disk_usage_percent": "number",
+              "current_tasks": "integer",
+              "completed_tasks": "integer",
+              "failed_tasks": "integer",
+              "average_task_time": "number (seconds)",
+              "last_heartbeat": "ISO 8601"
+            }
+          ],
+          "system_health": "healthy|degraded|unhealthy",
+          "alerts": ["array of alert objects"]
+        }
+      },
+      {
+        "action_id": "ORCH-004",
+        "action_name": "ResolveTaskDependency",
+        "description": "Check and verify if task dependencies are met before execution",
+        "category": "dependency_management",
+        "input_schema": {
+          "task_id": {"type": "string", "required": true},
+          "dependency_ids": {"type": "array", "items": "string", "required": true}
+        },
+        "output_schema": {
+          "task_id": "string",
+          "dependencies_met": "boolean",
+          "blocking_tasks": ["array of task_ids still blocking"],
+          "can_execute": "boolean",
+          "estimated_ready_time": "ISO 8601"
+        }
+      },
+      {
+        "action_id": "ORCH-005",
+        "action_name": "HandleAgentConflict",
+        "description": "Resolve conflicts when multiple agents attempt to access same resource",
+        "category": "conflict_resolution",
+        "input_schema": {
+          "resource_id": {"type": "string", "required": true},
+          "conflicting_agents": {"type": "array", "items": "string", "required": true},
+          "conflict_type": {"type": "string", "enum": ["concurrent_access", "version_conflict", "resource_depletion", "permission_conflict"], "required": true}
+        },
+        "output_schema": {
+          "resource_id": "string",
+          "resolution": "granted|queued|escalated",
+          "primary_agent": "string",
+          "queued_agents": ["array of agent_ids"],
+          "resolution_time": "ISO 8601",
+          "escalation_reason": "string or null"
+        }
+      },
+      {
+        "action_id": "ORCH-006",
+        "action_name": "GenerateSystemReport",
+        "description": "Generate comprehensive system status and performance report",
+        "category": "reporting",
+        "input_schema": {
+          "report_type": {"type": "string", "enum": ["daily", "hourly", "weekly", "monthly", "custom"], "required": true},
+          "include_sections": {"type": "array", "items": "string", "description": "agent_performance, task_metrics, workflow_status, resource_usage, errors, alerts", "required": false},
+          "time_range": {
+            "start": "ISO 8601",
+            "end": "ISO 8601"
+          }
+        },
+        "output_schema": {
+          "report_id": "string",
+          "report_type": "string",
+          "timestamp": "ISO 8601",
+          "summary": "string",
+          "sections": "object",
+          "metrics": "object",
+          "alerts": ["array"],
+          "recommendations": ["array"]
+        }
+      },
+      {
+        "action_id": "ORCH-007",
+        "action_name": "ScaleAgentResources",
+        "description": "Scale agent resources (CPU, RAM) based on workload",
+        "category": "resource_management",
+        "input_schema": {
+          "agent_id": {"type": "string", "required": true},
+          "target_vcpu": {"type": "integer", "required": true},
+          "target_memory_gb": {"type": "integer", "required": true},
+          "immediate": {"type": "boolean", "default": false}
+        },
+        "output_schema": {
+          "agent_id": "string",
+          "scaling_status": "scaling|completed|failed",
+          "previous_resources": "object",
+          "new_resources": "object",
+          "duration": "integer (seconds)"
+        }
+      },
+      {
+        "action_id": "ORCH-008",
+        "action_name": "RecoverFromFailure",
+        "description": "Implement recovery strategies when agents or tasks fail",
+        "category": "error_handling",
+        "input_schema": {
+          "failure_id": {"type": "string", "required": true},
+          "failed_agent": {"type": "string", "required": true},
+          "failed_task": {"type": "string", "required": true},
+          "error_message": {"type": "string", "required": true},
+          "recovery_strategy": {"type": "string", "enum": ["retry", "reassign", "escalate", "abort"], "required": false}
+        },
+        "output_schema": {
+          "failure_id": "string",
+          "recovery_action": "string",
+          "status": "recovered|escalated|aborted",
+          "new_assignment": "agent_id or null",
+          "retry_count": "integer"
+        }
+      }
+    ],
+    "event_handlers": [
+      {
+        "event": "task.created",
+        "handler": "Validate task, check dependencies, assign to agent"
+      },
+      {
+        "event": "task.assigned",
+        "handler": "Update task status, notify agent, start monitoring"
+      },
+      {
+        "event": "task.started",
+        "handler": "Log start time, update metrics, emit progress event"
+      },
+      {
+        "event": "task.completed",
+        "handler": "Verify completion, update metrics, trigger dependent tasks"
+      },
+      {
+        "event": "task.failed",
+        "handler": "Log failure, implement recovery, reassign or escalate"
+      },
+      {
+        "event": "agent.unhealthy",
+        "handler": "Alert, redistribute tasks, attempt recovery"
+      },
+      {
+        "event": "resource.depleted",
+        "handler": "Scale resources, queue new tasks, notify orchestrator"
+      },
+      {
+        "event": "deadline.approaching",
+        "handler": "Increase priority, allocate more resources, notify stakeholders"
+      }
+    ],
+    "monitoring_rules": [
+      {
+        "metric": "workflow_completion_time",
+        "threshold": 7200,
+        "unit": "seconds",
+        "alert_on": "exceed"
+      },
+      {
+        "metric": "task_failure_rate",
+        "threshold": 5,
+        "unit": "percent",
+        "alert_on": "exceed"
+      },
+      {
+        "metric": "agent_unhealthy_count",
+        "threshold": 2,
+        "unit": "count",
+        "alert_on": "exceed"
+      }
+    ],
+    "communication": {
+      "protocol": "gRPC + HTTP/2",
+      "message_broker": "RabbitMQ / Redis Pub/Sub",
+      "heartbeat_interval": 30,
+      "heartbeat_unit": "seconds"
+    },
+    "server_requirements": {
+      "compute": {
+        "vcpu": 16,
+        "memory_gb": 32,
+        "auto_scale": {
+          "enabled": true,
+          "min_vcpu": 8,
+          "max_vcpu": 32,
+          "scaling_metric": "cpu_usage",
+          "scaling_threshold": 70
+        }
+      },
+      "storage": {
+        "size_gb": 100,
+        "type": "SSD NVMe",
+        "breakdown": {
+          "workflow_logs": 40,
+          "task_queue": 30,
+          "agent_state": 20,
+          "metrics": 10
+        },
+        "persistence": "replicated"
+      },
+      "networking": {
+        "inbound_ports": [8080, 8081, 9000, 50051],
+        "outbound_requirements": "All agents, message brokers, external APIs",
+        "min_bandwidth_mbps": 1000,
+        "max_latency_ms": 10,
+        "protocol": "TCP, UDP, gRPC"
+      },
+      "base_image": "python:3.12-slim",
+      "docker_compose_service": {
+        "image": "orchestrator:latest",
+        "ports": ["8080:8080", "8081:8081", "50051:50051"],
+        "environment": [
+          "ORCHESTRATOR_MODE=master",
+          "LOG_LEVEL=DEBUG",
+          "MAX_CONCURRENT_TASKS=100",
+          "TASK_QUEUE_SIZE=10000",
+          "WORKER_THREADS=32",
+          "GRPC_LISTEN_PORT=50051"
+        ],
+        "volumes": [
+          "orchestrator_state:/app/state",
+          "orchestrator_logs:/app/logs",
+          "orchestrator_configs:/app/configs"
+        ],
+        "depends_on": ["rabbitmq", "postgres"],
+        "healthcheck": {
+          "test": ["CMD", "grpcurl", "-plaintext", "localhost:50051", "list"],
+          "interval": "10s",
+          "timeout": "5s",
+          "retries": 3
+        }
+      }
+    }
+  },
+  "specialist_agents": [
+    {
+      "agent_id": "fe-001",
+      "agent_name": "Frontend Expert Agent",
+      "type": "specialist",
+      "role": "Frontend development and UI/UX engineering",
+      "priority": 2,
+      "max_concurrent_tasks": 5,
+      "description": "Creates responsive UI components, pages, and integrates frontend with backend APIs",
+      "core_responsibilities": [
+        "Design and build React/Next.js components",
+        "Create responsive pages with Tailwind CSS",
+        "Integrate backend APIs",
+        "Optimize performance and accessibility",
+        "Generate hero sections and promotional content",
+        "Build product listing interfaces",
+        "Create interactive form components"
+      ],
+      "skills": {
+        "react_nextjs": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 5,
+          "tools": ["Next.js 14+", "React 18+", "React Router v6", "React Query"]
+        },
+        "typescript": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["TypeScript 5.x", "Type definitions"]
+        },
+        "tailwind_css": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 4,
+          "tools": ["Tailwind CSS 3.x", "PostCSS", "Headless UI"]
+        },
+        "responsive_design": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 6,
+          "tools": ["CSS Grid", "Flexbox", "Mobile-first approach"]
+        },
+        "javascript": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 5,
+          "tools": ["ES6+", "Async/Await", "Promises"]
+        },
+        "api_integration": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["Axios", "Fetch API", "REST", "GraphQL"]
+        },
+        "form_handling": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["React Hook Form", "Formik", "Zod validation"]
+        },
+        "testing": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Jest", "React Testing Library", "Playwright"]
+        },
+        "performance_optimization": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Code splitting", "Lazy loading", "Image optimization"]
+        },
+        "accessibility": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["WCAG", "axe-core", "ARIA"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "FE-001",
+          "action_name": "CreateComponent",
+          "description": "Build reusable React component with props, state, and styling",
+          "input_schema": {
+            "component_name": "string",
+            "component_type": "button|card|form|modal|navbar|hero|section|input",
+            "requirements": "string",
+            "styling_framework": "tailwind|css|styled-components",
+            "include_tests": "boolean"
+          },
+          "output_schema": {
+            "component_code": "string",
+            "component_file": "string",
+            "test_file": "string or null",
+            "storybook_entry": "string or null",
+            "status": "success|error"
+          }
+        },
+        {
+          "action_id": "FE-002",
+          "action_name": "CreatePage",
+          "description": "Build a complete page with multiple components and routing",
+          "input_schema": {
+            "page_name": "string",
+            "page_route": "string",
+            "components": ["array of component_ids"],
+            "api_endpoints": ["array of endpoint URLs"],
+            "requires_auth": "boolean"
+          },
+          "output_schema": {
+            "page_file": "string",
+            "route_config": "object",
+            "imports": ["array"],
+            "status": "success|error"
+          }
+        },
+        {
+          "action_id": "FE-003",
+          "action_name": "IntegrateAPIEndpoint",
+          "description": "Connect frontend component to backend API endpoint",
+          "input_schema": {
+            "component_id": "string",
+            "api_endpoint": "string",
+            "method": "GET|POST|PUT|DELETE|PATCH",
+            "data_mapping": "object",
+            "error_handling": "boolean"
+          },
+          "output_schema": {
+            "integration_code": "string",
+            "hook_code": "string or null",
+            "error_handling": "string",
+            "test_cases": ["array"]
+          }
+        },
+        {
+          "action_id": "FE-004",
+          "action_name": "GenerateHeroSection",
+          "description": "Create hero banner with image, text, and CTA buttons",
+          "input_schema": {
+            "hero_id": "string",
+            "image_url": "string",
+            "title": "string",
+            "subtitle": "string",
+            "cta_buttons": [
+              {
+                "label": "string",
+                "link": "string",
+                "style": "primary|secondary"
+              }
+            ],
+            "height_vh": "number"
+          },
+          "output_schema": {
+            "component_code": "string",
+            "css_classes": "object",
+            "responsive_breakpoints": "object"
+          }
+        },
+        {
+          "action_id": "FE-005",
+          "action_name": "CreateProductListing",
+          "description": "Build product grid/list with filtering, sorting, and pagination",
+          "input_schema": {
+            "display_type": "grid|list|masonry",
+            "items_per_page": "number",
+            "filters": ["price|category|brand|rating"],
+            "sorting_options": ["newest|price-asc|price-desc|rating|popularity"],
+            "enable_search": "boolean"
+          },
+          "output_schema": {
+            "component_code": "string",
+            "filter_logic": "string",
+            "state_management": "object"
+          }
+        },
+        {
+          "action_id": "FE-006",
+          "action_name": "BuildFormComponent",
+          "description": "Create form with validation and submission handling",
+          "input_schema": {
+            "form_id": "string",
+            "fields": [
+              {
+                "name": "string",
+                "type": "text|email|password|number|select|checkbox|textarea",
+                "validation": "object",
+                "required": "boolean"
+              }
+            ],
+            "submit_handler": "string (api_endpoint or handler_name)"
+          },
+          "output_schema": {
+            "component_code": "string",
+            "validation_schema": "object",
+            "submit_handler": "string"
+          }
+        },
+        {
+          "action_id": "FE-007",
+          "action_name": "OptimizePerformance",
+          "description": "Implement code splitting, lazy loading, and caching",
+          "input_schema": {
+            "page_or_component": "string",
+            "optimizations": ["code-split|lazy-load|image-optimize|cache"]
+          },
+          "output_schema": {
+            "optimization_report": "object",
+            "metrics_before": "object",
+            "metrics_after": "object",
+            "improvement_percent": "number"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["be-001", "mon-001"],
+        "services": ["backend_api", "cdn", "image_service"],
+        "external_apis": ["npm_registry", "cdn_providers"]
+      },
+      "resources": {
+        "files": ["frontend/app/", "frontend/components/", "frontend/lib/", "frontend/public/"],
+        "databases": [],
+        "apis": ["backend:8000/api/v1"],
+        "external_services": ["npm.io", "cdn.provider.com"]
+      },
+      "monitoring_rules": [
+        {"metric": "build_time_seconds", "threshold": 60, "alert_on": "exceed"},
+        {"metric": "lighthouse_score", "threshold": 90, "alert_on": "drop"},
+        {"metric": "component_test_coverage", "threshold": 80, "alert_on": "drop"}
+      ],
+      "server_requirements": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {"enabled": true, "min": 2, "max": 8}
+        },
+        "storage": {"size_gb": 30, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [3000, 3001, 9229],
+          "outbound": ["backend:8000", "npm:443", "github:443"],
+          "min_bandwidth_mbps": 100
+        }
+      }
+    },
+    {
+      "agent_id": "be-001",
+      "agent_name": "Backend Expert Agent",
+      "type": "specialist",
+      "role": "API and database development",
+      "priority": 2,
+      "max_concurrent_tasks": 5,
+      "description": "Designs database schemas, creates RESTful APIs, implements business logic and authentication",
+      "core_responsibilities": [
+        "Design and create database schemas",
+        "Build FastAPI endpoints and routes",
+        "Implement CRUD operations",
+        "Handle authentication and authorization",
+        "Implement business logic and validations",
+        "Optimize database queries",
+        "Setup caching mechanisms",
+        "Manage environment variables"
+      ],
+      "skills": {
+        "fastapi": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 4,
+          "tools": ["FastAPI 0.100+", "Uvicorn", "Pydantic"]
+        },
+        "python": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 6,
+          "tools": ["Python 3.10+", "Async/Await", "Type hints"]
+        },
+        "sqlalchemy": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["SQLAlchemy 2.0+", "ORM", "Query builder"]
+        },
+        "postgresql": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 5,
+          "tools": ["PostgreSQL 14+", "Indexing", "Query optimization"]
+        },
+        "rest_api_design": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 5,
+          "tools": ["OpenAPI", "Swagger", "REST principles"]
+        },
+        "authentication": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["JWT", "OAuth2", "Password hashing"]
+        },
+        "database_optimization": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["Query optimization", "Indexing", "EXPLAIN plans"]
+        },
+        "testing": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["pytest", "Fixtures", "Mocking"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "BE-001",
+          "action_name": "CreateDatabaseSchema",
+          "description": "Design and create database tables with relationships",
+          "input_schema": {
+            "entity_name": "string",
+            "fields": [
+              {
+                "name": "string",
+                "type": "integer|string|boolean|datetime|float|json",
+                "constraints": ["NOT NULL", "UNIQUE", "PRIMARY KEY", "FOREIGN KEY"],
+                "index": "boolean"
+              }
+            ],
+            "relationships": [
+              {
+                "type": "one-to-many|many-to-one|many-to-many",
+                "related_entity": "string"
+              }
+            ]
+          },
+          "output_schema": {
+            "migration_file": "string",
+            "sqlalchemy_model": "string",
+            "schema_diagram": "string"
+          }
+        },
+        {
+          "action_id": "BE-002",
+          "action_name": "CreateAPIEndpoint",
+          "description": "Build FastAPI endpoint with validation and documentation",
+          "input_schema": {
+            "endpoint_path": "string",
+            "method": "GET|POST|PUT|DELETE|PATCH",
+            "request_schema": "object",
+            "response_schema": "object",
+            "auth_required": "boolean",
+            "description": "string"
+          },
+          "output_schema": {
+            "endpoint_code": "string",
+            "route_definition": "object",
+            "openapi_spec": "object"
+          }
+        },
+        {
+          "action_id": "BE-003",
+          "action_name": "ImplementAuthentication",
+          "description": "Setup JWT/OAuth2 authentication with login and registration",
+          "input_schema": {
+            "auth_type": "jwt|oauth2|both",
+            "include_endpoints": ["login", "register", "logout", "refresh", "verify"]
+          },
+          "output_schema": {
+            "auth_module": "string",
+            "endpoints": ["array"],
+            "security_config": "object"
+          }
+        },
+        {
+          "action_id": "BE-004",
+          "action_name": "CreateCRUDOperations",
+          "description": "Generate CRUD endpoints for an entity",
+          "input_schema": {
+            "entity_name": "string",
+            "entity_model": "string",
+            "base_path": "string",
+            "operations": ["CREATE", "READ", "UPDATE", "DELETE", "LIST"]
+          },
+          "output_schema": {
+            "crud_routes": "string",
+            "controller_code": "string",
+            "test_suite": "string"
+          }
+        },
+        {
+          "action_id": "BE-005",
+          "action_name": "ImplementValidation",
+          "description": "Create data validation schemas and error handling",
+          "input_schema": {
+            "entity_name": "string",
+            "validation_rules": [
+              {
+                "field": "string",
+                "rules": ["required", "min_length", "max_length", "pattern", "unique"]
+              }
+            ]
+          },
+          "output_schema": {
+            "pydantic_schema": "string",
+            "validation_code": "string"
+          }
+        },
+        {
+          "action_id": "BE-006",
+          "action_name": "OptimizeDatabaseQuery",
+          "description": "Analyze and optimize slow database queries",
+          "input_schema": {
+            "query_description": "string",
+            "current_performance": "object"
+          },
+          "output_schema": {
+            "optimized_query": "string",
+            "index_recommendations": ["array"],
+            "performance_improvement": "object"
+          }
+        },
+        {
+          "action_id": "BE-007",
+          "action_name": "SetupCaching",
+          "description": "Implement Redis caching for performance",
+          "input_schema": {
+            "cache_type": "query|session|response",
+            "ttl_seconds": "integer",
+            "cache_key_pattern": "string"
+          },
+          "output_schema": {
+            "cache_code": "string",
+            "invalidation_logic": "string"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["fe-001", "pm-001", "as-001", "mon-001"],
+        "services": ["postgres", "redis"],
+        "external_services": ["pypi.org"]
+      },
+      "resources": {
+        "files": ["backend/app/", "backend/alembic/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["postgres:5432", "redis:6379"],
+        "external_services": ["PyPI"]
+      },
+      "monitoring_rules": [
+        {"metric": "api_response_time_ms", "threshold": 200, "alert_on": "exceed"},
+        {"metric": "database_query_time_ms", "threshold": 50, "alert_on": "exceed"},
+        {"metric": "error_rate_percent", "threshold": 0.5, "alert_on": "exceed"}
+      ],
+      "server_requirements": {
+        "compute": {
+          "vcpu": 8,
+          "memory_gb": 16,
+          "auto_scale": {"enabled": true, "min": 4, "max": 16}
+        },
+        "storage": {"size_gb": 60, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [8000, 8001, 9229],
+          "outbound": ["postgres:5432", "redis:6379", "external_apis:443"],
+          "min_bandwidth_mbps": 200
+        }
+      }
+    },
+    {
+      "agent_id": "git-001",
+      "agent_name": "Git Expert Agent",
+      "type": "specialist",
+      "role": "Version control and deployment automation",
+      "priority": 2,
+      "max_concurrent_tasks": 3,
+      "description": "Manages Git repository, branching, merging, CI/CD pipelines, and deployments",
+      "core_responsibilities": [
+        "Manage Git repository and branches",
+        "Handle merge conflicts",
+        "Setup and maintain CI/CD pipelines",
+        "Automate deployments",
+        "Manage releases and tagging",
+        "Handle rollbacks",
+        "Monitor repository health"
+      ],
+      "skills": {
+        "git": {
+          "level": 5,
+          "proficiency": "Expert",
+          "experience_years": 6,
+          "tools": ["Git 2.40+", "Git Flow", "Conventional Commits"]
+        },
+        "github": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 5,
+          "tools": ["GitHub Actions", "GitHub API", "GitHub CLI"]
+        },
+        "github_actions": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Workflow automation", "Custom actions"]
+        },
+        "docker": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["Docker", "Docker Compose", "Container Registry"]
+        },
+        "bash_scripting": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 5,
+          "tools": ["Bash 5+", "Shell scripting"]
+        },
+        "deployment": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Blue-green deployment", "Zero-downtime deploys"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "GIT-001",
+          "action_name": "CreateFeatureBranch",
+          "description": "Create new branch for feature development",
+          "input_schema": {
+            "branch_name": "string",
+            "base_branch": "string",
+            "feature_type": "feature|bugfix|hotfix|refactor"
+          },
+          "output_schema": {
+            "branch_name": "string",
+            "created_at": "ISO 8601",
+            "status": "success|error"
+          }
+        },
+        {
+          "action_id": "GIT-002",
+          "action_name": "CommitCode",
+          "description": "Commit code with proper message and formatting",
+          "input_schema": {
+            "message": "string",
+            "files": ["array of file paths"],
+            "branch": "string",
+            "sign_commit": "boolean"
+          },
+          "output_schema": {
+            "commit_hash": "string",
+            "files_changed": "integer",
+            "additions": "integer",
+            "deletions": "integer"
+          }
+        },
+        {
+          "action_id": "GIT-003",
+          "action_name": "CreatePullRequest",
+          "description": "Create PR with description and linking",
+          "input_schema": {
+            "source_branch": "string",
+            "target_branch": "string",
+            "title": "string",
+            "description": "string",
+            "reviewers": ["array of github_usernames"]
+          },
+          "output_schema": {
+            "pr_number": "integer",
+            "pr_url": "string",
+            "status": "open"
+          }
+        },
+        {
+          "action_id": "GIT-004",
+          "action_name": "ResolveMergeConflict",
+          "description": "Automatically resolve or guide resolution of conflicts",
+          "input_schema": {
+            "pr_number": "integer",
+            "conflict_files": ["array of file paths"],
+            "auto_resolve": "boolean"
+          },
+          "output_schema": {
+            "resolved": "boolean",
+            "resolution_details": "object",
+            "status": "resolved|needs_manual_review"
+          }
+        },
+        {
+          "action_id": "GIT-005",
+          "action_name": "SetupCIPipeline",
+          "description": "Create or update GitHub Actions workflow",
+          "input_schema": {
+            "pipeline_name": "string",
+            "triggers": ["push", "pull_request", "schedule"],
+            "stages": [
+              {
+                "name": "string",
+                "steps": ["array of step commands"]
+              }
+            ]
+          },
+          "output_schema": {
+            "workflow_file": "string",
+            "status": "created|updated"
+          }
+        },
+        {
+          "action_id": "GIT-006",
+          "action_name": "DeployToEnvironment",
+          "description": "Deploy code to specified environment",
+          "input_schema": {
+            "environment": "development|staging|production",
+            "version": "string",
+            "force_deploy": "boolean"
+          },
+          "output_schema": {
+            "deployment_id": "string",
+            "status": "in_progress|completed|failed",
+            "deployment_url": "string"
+          }
+        },
+        {
+          "action_id": "GIT-007",
+          "action_name": "RollbackDeployment",
+          "description": "Rollback to previous version",
+          "input_schema": {
+            "environment": "string",
+            "previous_version": "string",
+            "reason": "string"
+          },
+          "output_schema": {
+            "rollback_id": "string",
+            "status": "completed|failed",
+            "deployed_version": "string"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["fe-001", "be-001", "mon-001"],
+        "services": ["github", "docker_registry"],
+        "external_services": ["docker.io", "github.com"]
+      },
+      "resources": {
+        "files": [".github/workflows/", ".gitignore"],
+        "databases": [],
+        "apis": ["github.com/api/v3"],
+        "external_services": ["GitHub", "Docker Registry"]
+      },
+      "monitoring_rules": [
+        {"metric": "merge_time_seconds", "threshold": 86400, "alert_on": "exceed"},
+        {"metric": "deployment_failure_rate", "threshold": 10, "alert_on": "exceed"}
+      ],
+      "server_requirements": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {"enabled": false}
+        },
+        "storage": {"size_gb": 20, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [443],
+          "outbound": ["github.com:443", "docker.io:443"],
+          "min_bandwidth_mbps": 100
+        }
+      }
+    },
+    {
+      "agent_id": "pm-001",
+      "agent_name": "Product Management Agent",
+      "type": "specialist",
+      "role": "Product data management and catalog operations",
+      "priority": 2,
+      "max_concurrent_tasks": 4,
+      "description": "Manages product data, CRUD operations, pricing, inventory, and images",
+      "core_responsibilities": [
+        "Create/update/delete products",
+        "Manage pricing and discounts",
+        "Handle inventory tracking",
+        "Manage product images",
+        "Validate product data",
+        "Sync with frontend/dashboards",
+        "Manage categories and tags",
+        "Bulk operations"
+      ],
+      "skills": {
+        "database_operations": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["SQL", "ORM", "Transactions"]
+        },
+        "api_integration": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["REST APIs", "Webhooks"]
+        },
+        "data_validation": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Schema validation", "Data integrity"]
+        },
+        "image_processing": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Image optimization", "S3", "CDN"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "PM-001",
+          "action_name": "CreateProduct",
+          "description": "Add new product to catalog",
+          "input_schema": {
+            "product_data": {
+              "name": "string",
+              "description": "string",
+              "category": "string",
+              "price": "number",
+              "sku": "string",
+              "stock": "integer",
+              "images": ["array of URLs"]
+            }
+          },
+          "output_schema": {
+            "product_id": "string",
+            "created_at": "ISO 8601",
+            "status": "created|error"
+          }
+        },
+        {
+          "action_id": "PM-002",
+          "action_name": "UpdateProduct",
+          "description": "Modify existing product",
+          "input_schema": {
+            "product_id": "string",
+            "updates": "object"
+          },
+          "output_schema": {
+            "product_id": "string",
+            "updated_fields": ["array"],
+            "status": "updated|error"
+          }
+        },
+        {
+          "action_id": "PM-003",
+          "action_name": "DeleteProduct",
+          "description": "Remove product from catalog",
+          "input_schema": {
+            "product_id": "string",
+            "cascade_delete": "boolean"
+          },
+          "output_schema": {
+            "product_id": "string",
+            "status": "deleted|error"
+          }
+        },
+        {
+          "action_id": "PM-004",
+          "action_name": "ManageInventory",
+          "description": "Update stock levels",
+          "input_schema": {
+            "product_id": "string",
+            "quantity_change": "integer",
+            "reason": "string"
+          },
+          "output_schema": {
+            "product_id": "string",
+            "new_stock": "integer",
+            "alert_triggered": "boolean"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["be-001", "ad-001"],
+        "services": ["postgres", "s3"],
+        "external_services": []
+      },
+      "resources": {
+        "files": ["backend/app/models/product.py"],
+        "databases": ["ecommerce_db"],
+        "apis": ["backend:8000/api/v1/products"],
+        "external_services": ["S3"]
+      },
+      "server_requirements": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {"enabled": true, "min": 2, "max": 8}
+        },
+        "storage": {"size_gb": 40, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [8080],
+          "outbound": ["backend:8000", "s3:443"],
+          "min_bandwidth_mbps": 100
+        }
+      }
+    },
+    {
+      "agent_id": "ad-001",
+      "agent_name": "Admin Dashboard Agent",
+      "type": "specialist",
+      "role": "Administrative interface and analytics",
+      "priority": 2,
+      "max_concurrent_tasks": 3,
+      "description": "Builds admin dashboard, user management, analytics, and reporting",
+      "core_responsibilities": [
+        "Build admin dashboard UI",
+        "Create user management views",
+        "Generate analytics reports",
+        "Implement RBAC",
+        "Create admin pages",
+        "Build data visualization",
+        "Handle admin actions"
+      ],
+      "skills": {
+        "ui_components": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["React", "Next.js"]
+        },
+        "data_visualization": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Charts.js", "Recharts"]
+        },
+        "rbac": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Role-based access control"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "AD-001",
+          "action_name": "CreateAdminDashboard",
+          "description": "Build main admin dashboard with KPIs",
+          "input_schema": {
+            "dashboard_id": "string",
+            "widgets": ["array of widget configs"]
+          },
+          "output_schema": {
+            "component_code": "string",
+            "dashboard_layout": "object"
+          }
+        },
+        {
+          "action_id": "AD-002",
+          "action_name": "BuildUserManagement",
+          "description": "Create user listing and permission management",
+          "input_schema": {
+            "features": ["list", "add", "edit", "delete"]
+          },
+          "output_schema": {
+            "page_code": "string",
+            "api_integrations": ["array"]
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["fe-001", "be-001"],
+        "services": ["postgres"],
+        "external_services": []
+      },
+      "resources": {
+        "files": ["frontend/app/admin/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["backend:8000/api/v1/admin"],
+        "external_services": []
+      },
+      "server_requirements": {
+        "compute": {
+          "vcpu": 2,
+          "memory_gb": 4,
+          "auto_scale": {"enabled": false}
+        },
+        "storage": {"size_gb": 10, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [3001],
+          "outbound": ["backend:8000"],
+          "min_bandwidth_mbps": 50
+        }
+      }
+    },
+    {
+      "agent_id": "ud-001",
+      "agent_name": "User Dashboard Agent",
+      "type": "specialist",
+      "role": "User-facing features and interface",
+      "priority": 2,
+      "max_concurrent_tasks": 3,
+      "description": "Builds user dashboard, profile management, order tracking",
+      "core_responsibilities": [
+        "Build user dashboard",
+        "Create profile management",
+        "Implement order tracking",
+        "Handle notifications",
+        "Create wishlist features",
+        "Implement reviews system"
+      ],
+      "skills": {
+        "user_experience": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["UX design", "User research"]
+        },
+        "interactive_components": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["React hooks", "State management"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "UD-001",
+          "action_name": "BuildUserDashboard",
+          "description": "Create personalized user dashboard",
+          "input_schema": {
+            "dashboard_id": "string",
+            "widgets": ["array"]
+          },
+          "output_schema": {
+            "component_code": "string",
+            "api_integrations": ["array"]
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["fe-001", "be-001"],
+        "services": ["postgres"],
+        "external_services": []
+      },
+      "resources": {
+        "files": ["frontend/app/user/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["backend:8000/api/v1/users"],
+        "external_services": []
+      },
+      "server_requirements": {
+        "compute": {
+          "vcpu": 2,
+          "memory_gb": 4,
+          "auto_scale": {"enabled": false}
+        },
+        "storage": {"size_gb": 10, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [3002],
+          "outbound": ["backend:8000"],
+          "min_bandwidth_mbps": 50
+        }
+      }
+    },
+    {
+      "agent_id": "as-001",
+      "agent_name": "Authentication & Security Agent",
+      "type": "specialist",
+      "role": "Authentication, authorization, and security",
+      "priority": 1,
+      "max_concurrent_tasks": 4,
+      "description": "Implements OAuth, JWT, RBAC, encryption, and security policies",
+      "core_responsibilities": [
+        "Implement authentication flows",
+        "Setup authorization and RBAC",
+        "Handle encryption and hashing",
+        "Manage security policies",
+        "Audit security logs",
+        "Handle password management",
+        "Implement data protection"
+      ],
+      "skills": {
+        "oauth_jwt": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["OAuth2", "JWT", "OpenID Connect"]
+        },
+        "encryption": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["TLS/SSL", "Encryption algorithms"]
+        },
+        "rbac": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Role-based access control"]
+        },
+        "security_auditing": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Security logging", "Audit trails"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "AS-001",
+          "action_name": "ImplementAuthenticationFlow",
+          "description": "Setup login/register/logout authentication",
+          "input_schema": {
+            "auth_type": "jwt|oauth2|both",
+            "providers": ["email", "google", "github"]
+          },
+          "output_schema": {
+            "auth_module": "string",
+            "endpoints": ["array"],
+            "config": "object"
+          }
+        },
+        {
+          "action_id": "AS-002",
+          "action_name": "SetupRBAC",
+          "description": "Implement role-based access control",
+          "input_schema": {
+            "roles": [
+              {
+                "name": "string",
+                "permissions": ["array"]
+              }
+            ]
+          },
+          "output_schema": {
+            "rbac_module": "string",
+            "middleware": "string"
+          }
+        },
+        {
+          "action_id": "AS-003",
+          "action_name": "ImplementEncryption",
+          "description": "Setup data encryption and password hashing",
+          "input_schema": {
+            "encryption_type": "aes|rsa|hybrid",
+            "hash_algorithm": "bcrypt|argon2|scrypt"
+          },
+          "output_schema": {
+            "encryption_module": "string",
+            "key_management": "object"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["be-001", "fe-001"],
+        "services": ["postgres"],
+        "external_services": ["oauth_providers"]
+      },
+      "resources": {
+        "files": ["backend/app/security/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["backend:8000/api/v1/auth"],
+        "external_services": ["OAuth providers"]
+      },
+      "server_requirements": {
+        "compute": {
+          "vcpu": 4,
+          "memory_gb": 8,
+          "auto_scale": {"enabled": true, "min": 2, "max": 8}
+        },
+        "storage": {"size_gb": 20, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [8080],
+          "outbound": ["backend:8000", "oauth_providers:443"],
+          "min_bandwidth_mbps": 100
+        }
+      }
+    },
+    {
+      "agent_id": "nc-001",
+      "agent_name": "Notification & Communication Agent",
+      "type": "specialist",
+      "role": "Notifications, alerts, and communications",
+      "priority": 2,
+      "max_concurrent_tasks": 5,
+      "description": "Handles email, SMS, push notifications, and webhooks",
+      "core_responsibilities": [
+        "Send email notifications",
+        "Send SMS alerts",
+        "Push notifications",
+        "Webhook integrations",
+        "Alert management",
+        "Communication templates",
+        "Notification tracking"
+      ],
+      "skills": {
+        "email_services": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["SendGrid", "AWS SES", "SMTP"]
+        },
+        "sms_services": {
+          "level": 2,
+          "proficiency": "Basic",
+          "experience_years": 1,
+          "tools": ["Twilio", "AWS SNS"]
+        },
+        "push_notifications": {
+          "level": 2,
+          "proficiency": "Basic",
+          "experience_years": 1,
+          "tools": ["FCM", "APNs"]
+        },
+        "webhook_integration": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 2,
+          "tools": ["Webhook management", "Signing", "Retry logic"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "NC-001",
+          "action_name": "SendEmailNotification",
+          "description": "Send email to user or admin",
+          "input_schema": {
+            "to_email": "string",
+            "subject": "string",
+            "template": "string",
+            "context": "object"
+          },
+          "output_schema": {
+            "notification_id": "string",
+            "status": "sent|failed",
+            "timestamp": "ISO 8601"
+          }
+        },
+        {
+          "action_id": "NC-002",
+          "action_name": "SendSMSAlert",
+          "description": "Send SMS alert",
+          "input_schema": {
+            "phone_number": "string",
+            "message": "string"
+          },
+          "output_schema": {
+            "notification_id": "string",
+            "status": "sent|failed"
+          }
+        },
+        {
+          "action_id": "NC-003",
+          "action_name": "TriggerWebhook",
+          "description": "Trigger external webhook",
+          "input_schema": {
+            "webhook_url": "string",
+            "event_type": "string",
+            "payload": "object"
+          },
+          "output_schema": {
+            "webhook_id": "string",
+            "status": "delivered|failed",
+            "response": "object"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["be-001", "mon-001"],
+        "services": ["email_service", "sms_service"],
+        "external_services": ["SendGrid", "Twilio"]
+      },
+      "resources": {
+        "files": ["backend/app/notifications/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["SendGrid", "Twilio"],
+        "external_services": ["Email/SMS providers"]
+      },
+      "server_requirements": {
+        "compute": {
+          "vcpu": 2,
+          "memory_gb": 4,
+          "auto_scale": {"enabled": true, "min": 1, "max": 4}
+        },
+        "storage": {"size_gb": 10, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [8080],
+          "outbound": ["sendgrid:443", "twilio:443", "backend:8000"],
+          "min_bandwidth_mbps": 50
+        }
+      }
+    },
+    {
+      "agent_id": "mon-001",
+      "agent_name": "Monitoring & Inspector Agent",
+      "type": "specialist",
+      "role": "Quality assurance, monitoring, and inspection",
+      "priority": 1,
+      "max_concurrent_tasks": 10,
+      "description": "Monitors all agents, verifies code quality, runs tests, and reports issues",
+      "core_responsibilities": [
+        "Monitor agent health",
+        "Run automated tests",
+        "Check code quality",
+        "Verify performance",
+        "Track metrics",
+        "Generate reports",
+        "Detect issues",
+        "Trigger alerts"
+      ],
+      "skills": {
+        "testing_frameworks": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Jest", "pytest", "Playwright"]
+        },
+        "code_quality": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["ESLint", "Pylint", "SonarQube"]
+        },
+        "monitoring": {
+          "level": 4,
+          "proficiency": "Advanced",
+          "experience_years": 4,
+          "tools": ["Prometheus", "Grafana", "ELK"]
+        },
+        "performance_analysis": {
+          "level": 3,
+          "proficiency": "Intermediate",
+          "experience_years": 3,
+          "tools": ["Lighthouse", "DevTools"]
+        }
+      },
+      "actions": [
+        {
+          "action_id": "MON-001",
+          "action_name": "MonitorAgentHealth",
+          "description": "Check health status of all agents",
+          "input_schema": {
+            "agent_ids": ["array or 'all'"],
+            "check_type": "basic|comprehensive"
+          },
+          "output_schema": {
+            "timestamp": "ISO 8601",
+            "agents": ["array of agent status"],
+            "system_health": "healthy|degraded|unhealthy",
+            "alerts": ["array"]
+          }
+        },
+        {
+          "action_id": "MON-002",
+          "action_name": "RunTests",
+          "description": "Execute unit, integration, and E2E tests",
+          "input_schema": {
+            "test_type": "unit|integration|e2e|all",
+            "scope": "frontend|backend|all"
+          },
+          "output_schema": {
+            "total_tests": "integer",
+            "passed": "integer",
+            "failed": "integer",
+            "coverage": "number"
+          }
+        },
+        {
+          "action_id": "MON-003",
+          "action_name": "CheckCodeQuality",
+          "description": "Analyze code for quality issues",
+          "input_schema": {
+            "scope": "frontend|backend|all",
+            "check_type": ["linting", "formatting", "security"]
+          },
+          "output_schema": {
+            "quality_score": "number",
+            "issues": ["array"],
+            "recommendations": ["array"]
+          }
+        },
+        {
+          "action_id": "MON-004",
+          "action_name": "VerifyPerformance",
+          "description": "Check performance metrics",
+          "input_schema": {
+            "check_areas": ["frontend", "backend", "database"]
+          },
+          "output_schema": {
+            "performance_score": "number",
+            "metrics": "object",
+            "bottlenecks": ["array"]
+          }
+        },
+        {
+          "action_id": "MON-005",
+          "action_name": "GenerateReport",
+          "description": "Create comprehensive system report",
+          "input_schema": {
+            "report_type": "daily|hourly|weekly",
+            "include_sections": ["array"]
+          },
+          "output_schema": {
+            "report_id": "string",
+            "report_file": "string",
+            "summary": "string"
+          }
+        }
+      ],
+      "dependencies": {
+        "agents": ["fe-001", "be-001", "git-001", "orch-001"],
+        "services": ["prometheus", "grafana"],
+        "external_services": []
+      },
+      "resources": {
+        "files": ["frontend/", "backend/", "tests/"],
+        "databases": ["ecommerce_db"],
+        "apis": ["All agent endpoints"],
+        "external_services": ["Monitoring services"]
+      },
+      "monitoring_rules": [
+        {"metric": "test_failure_rate", "threshold": 5, "alert_on": "exceed"},
+        {"metric": "code_quality_score", "threshold": 80, "alert_on": "drop"}
+      ],
+      "server_requirements": {
+        "compute": {
+          "vcpu": 8,
+          "memory_gb": 16,
+          "auto_scale": {"enabled": true, "min": 4, "max": 16}
+        },
+        "storage": {"size_gb": 50, "type": "SSD"},
+        "networking": {
+          "inbound_ports": [9090, 5601, 3000],
+          "outbound": ["All agents", "monitoring services"],
+          "min_bandwidth_mbps": 200
+        }
+      }
+    }
+  ],
+  "shared_services": {
+    "postgres": {
+      "service_id": "postgres-1",
+      "name": "PostgreSQL Primary Database",
+      "type": "database",
+      "version": "15.x",
+      "port": 5432,
+      "docker_image": "postgres:15-alpine",
+      "environment": {
+        "POSTGRES_USER": "ecommerce",
+        "POSTGRES_PASSWORD": "secure_password_here",
+        "POSTGRES_DB": "ecommerce_db"
+      },
+      "volumes": {
+        "postgres_data": "/var/lib/postgresql/data",
+        "postgres_backups": "/var/lib/postgresql/backups"
+      },
+      "backup_strategy": {
+        "full_backup": "daily at 02:00",
+        "incremental": "every 6 hours",
+        "retention_days": 30
+      },
+      "monitoring": {
+        "metrics": ["connections", "transaction_rate", "query_performance"],
+        "alerts": [
+          {"metric": "connections", "threshold": 150, "alert_on": "exceed"},
+          {"metric": "disk_usage", "threshold": 80, "alert_on": "exceed"}
+        ]
+      }
+    },
+    "redis": {
+      "service_id": "redis-1",
+      "name": "Redis Cache",
+      "type": "cache",
+      "version": "7.x",
+      "port": 6379,
+      "docker_image": "redis:7-alpine",
+      "persistence": {
+        "enabled": true,
+        "method": "AOF",
+        "fsync": "everysec"
+      },
+      "volumes": {
+        "redis_data": "/data"
+      },
+      "monitoring": {
+        "metrics": ["memory_usage", "hit_rate", "commands_per_sec"],
+        "alerts": [
+          {"metric": "memory_usage", "threshold": 80, "alert_on": "exceed"}
+        ]
+      }
+    },
+    "rabbitmq": {
+      "service_id": "rabbitmq-1",
+      "name": "RabbitMQ Message Broker",
+      "type": "message_broker",
+      "version": "3.12.x",
+      "ports": {
+        "amqp": 5672,
+        "management": 15672
+      },
+      "docker_image": "rabbitmq:3.12-management-alpine",
+      "environment": {
+        "RABBITMQ_DEFAULT_USER": "admin",
+        "RABBITMQ_DEFAULT_PASS": "admin_password"
+      },
+      "monitoring": {
+        "metrics": ["queue_length", "message_rate", "connection_count"],
+        "alerts": [
+          {"metric": "queue_length", "threshold": 1000, "alert_on": "exceed"}
+        ]
+      }
+    },
+    "minio": {
+      "service_id": "minio-1",
+      "name": "MinIO Object Storage",
+      "type": "object_storage",
+      "port": 9000,
+      "docker_image": "minio/minio:latest",
+      "buckets": ["products", "users", "backups", "uploads"],
+      "access_key": "minioadmin",
+      "secret_key": "minioadmin",
+      "volumes": {
+        "minio_data": "/data"
+      }
+    }
+  },
+  "communication_config": {
+    "protocol": "gRPC + HTTP/2 + AMQP",
+    "message_broker": "RabbitMQ",
+    "event_streaming": "Redis Pub/Sub",
+    "api_gateway": {
+      "type": "Kong/Nginx",
+      "port": 8080,
+      "routes": [
+        {"path": "/api/v1/*", "backend": "backend:8000"},
+        {"path": "/admin/*", "backend": "admin-dashboard:3001"},
+        {"path": "/user/*", "backend": "user-dashboard:3002"}
+      ]
+    },
+    "event_topics": [
+      "code.commit",
+      "code.push",
+      "test.started",
+      "test.completed",
+      "test.failed",
+      "deployment.started",
+      "deployment.completed",
+      "deployment.failed",
+      "error.detected",
+      "security.vulnerability",
+      "quality.gate.passed",
+      "quality.gate.failed",
+      "agent.status",
+      "task.completed"
+    ]
+  },
+  "workflow_templates": [
+    {
+      "workflow_id": "WF-FEATURE-DEV",
+      "name": "Feature Development Workflow",
+      "description": "Complete workflow for developing a new feature",
+      "tasks": [
+        {
+          "task_id": "T-FD-001",
+          "task_name": "Create Feature Branch",
+          "agent_id": "git-001",
+          "action_id": "GIT-001",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-FD-002",
+          "task_name": "Design Database Schema",
+          "agent_id": "be-001",
+          "action_id": "BE-001",
+          "dependencies": ["T-FD-001"]
+        },
+        {
+          "task_id": "T-FD-003",
+          "task_name": "Create Backend API",
+          "agent_id": "be-001",
+          "action_id": "BE-002",
+          "dependencies": ["T-FD-002"]
+        },
+        {
+          "task_id": "T-FD-004",
+          "task_name": "Build Frontend Component",
+          "agent_id": "fe-001",
+          "action_id": "FE-001",
+          "dependencies": ["T-FD-003"]
+        },
+        {
+          "task_id": "T-FD-005",
+          "task_name": "Integrate API",
+          "agent_id": "fe-001",
+          "action_id": "FE-003",
+          "dependencies": ["T-FD-003", "T-FD-004"]
+        },
+        {
+          "task_id": "T-FD-006",
+          "task_name": "Run Tests",
+          "agent_id": "mon-001",
+          "action_id": "MON-002",
+          "dependencies": ["T-FD-005"]
+        },
+        {
+          "task_id": "T-FD-007",
+          "task_name": "Check Code Quality",
+          "agent_id": "mon-001",
+          "action_id": "MON-003",
+          "dependencies": ["T-FD-005"]
+        },
+        {
+          "task_id": "T-FD-008",
+          "task_name": "Create Pull Request",
+          "agent_id": "git-001",
+          "action_id": "GIT-003",
+          "dependencies": ["T-FD-006", "T-FD-007"]
+        }
+      ]
+    },
+    {
+      "workflow_id": "WF-PRODUCT-LAUNCH",
+      "name": "Product Launch Workflow",
+      "description": "Workflow for launching a new product",
+      "tasks": [
+        {
+          "task_id": "T-PL-001",
+          "task_name": "Create Product",
+          "agent_id": "pm-001",
+          "action_id": "PM-001",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-PL-002",
+          "task_name": "Create Product Page",
+          "agent_id": "fe-001",
+          "action_id": "FE-002",
+          "dependencies": ["T-PL-001"]
+        },
+        {
+          "task_id": "T-PL-003",
+          "task_name": "Update Admin Dashboard",
+          "agent_id": "ad-001",
+          "action_id": "AD-001",
+          "dependencies": ["T-PL-001"]
+        },
+        {
+          "task_id": "T-PL-004",
+          "task_name": "Verify Product Display",
+          "agent_id": "mon-001",
+          "action_id": "MON-004",
+          "dependencies": ["T-PL-002", "T-PL-003"]
+        },
+        {
+          "task_id": "T-PL-005",
+          "task_name": "Deploy to Production",
+          "agent_id": "git-001",
+          "action_id": "GIT-006",
+          "dependencies": ["T-PL-004"]
+        }
+      ]
+    },
+    {
+      "workflow_id": "WF-DAILY-CHECK",
+      "name": "Daily System Check Workflow",
+      "description": "Scheduled daily monitoring and health checks",
+      "schedule": "0 6 * * *",
+      "tasks": [
+        {
+          "task_id": "T-DC-001",
+          "task_name": "Check All Agent Health",
+          "agent_id": "orch-001",
+          "action_id": "ORCH-003",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-DC-002",
+          "task_name": "Run All Tests",
+          "agent_id": "mon-001",
+          "action_id": "MON-002",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-DC-003",
+          "task_name": "Check Code Quality",
+          "agent_id": "mon-001",
+          "action_id": "MON-003",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-DC-004",
+          "task_name": "Verify Performance",
+          "agent_id": "mon-001",
+          "action_id": "MON-004",
+          "dependencies": []
+        },
+        {
+          "task_id": "T-DC-005",
+          "task_name": "Generate Daily Report",
+          "agent_id": "mon-001",
+          "action_id": "MON-005",
+          "dependencies": ["T-DC-001", "T-DC-002", "T-DC-003", "T-DC-004"]
+        }
+      ]
+    }
+  ],
+  "quality_gates": [
+    {
+      "gate_id": "QG-COMMIT",
+      "name": "Code Commit Quality Gate",
+      "trigger": "on git commit",
+      "checks": [
+        {"name": "Linting", "tool": "ESLint/Pylint", "required": true},
+        {"name": "Code Formatting", "tool": "Prettier", "required": true},
+        {"name": "Type Checking", "tool": "TypeScript/mypy", "required": true},
+        {"name": "Unit Tests", "tool": "Jest/pytest", "required": true},
+        {"name": "Secret Detection", "tool": "detect-secrets", "required": true}
+      ],
+      "pass_criteria": "All checks must pass",
+      "fail_action": "Block commit"
+    },
+    {
+      "gate_id": "QG-PR",
+      "name": "Pull Request Quality Gate",
+      "trigger": "on pull request",
+      "checks": [
+        {"name": "All QG-COMMIT checks", "required": true},
+        {"name": "Integration Tests", "required": true},
+        {"name": "E2E Tests", "required": false},
+        {"name": "Code Coverage >=85%", "required": true},
+        {"name": "Performance (Lighthouse >=90)", "required": true},
+        {"name": "Security Scan", "required": true},
+        {"name": "Accessibility Tests", "required": true},
+        {"name": "Code Review Approval", "required": true}
+      ],
+      "pass_criteria": "All required checks pass + code review approved",
+      "fail_action": "Block merge"
+    },
+    {
+      "gate_id": "QG-DEPLOY",
+      "name": "Pre-Deployment Quality Gate",
+      "trigger": "before merge to main",
+      "checks": [
+        {"name": "All QG-PR checks", "required": true},
+        {"name": "Build Artifact Creation", "required": true},
+        {"name": "Docker Image Build", "required": true},
+        {"name": "Database Migrations", "required": true},
+        {"name": "Environment Configuration", "required": true}
+      ],
+      "pass_criteria": "All checks must pass",
+      "fail_action": "Prevent deployment"
+    },
+    {
+      "gate_id": "QG-MONITOR",
+      "name": "Post-Deployment Monitoring Gate",
+      "trigger": "after deployment",
+      "duration_minutes": 60,
+      "checks": [
+        {"name": "Application Health", "required": true},
+        {"name": "Error Rate <0.5%", "required": true},
+        {"name": "Performance <5% degradation", "required": true},
+        {"name": "Database Connection Stability", "required": true},
+        {"name": "Security Scan", "required": true}
+      ],
+      "pass_criteria": "All checks pass for 60 minutes",
+      "fail_action": "Auto-rollback to previous version"
+    }
+  ],
+  "docker_compose": {
+    "version": "3.8",
+    "services": {
+      "orchestrator": {
+        "image": "orchestrator:latest",
+        "ports": ["8080:8080", "8081:8081", "50051:50051"],
+        "environment": [
+          "ORCHESTRATOR_MODE=master",
+          "LOG_LEVEL=DEBUG",
+          "MAX_CONCURRENT_TASKS=100"
+        ],
+        "depends_on": ["rabbitmq", "postgres"]
+      },
+      "frontend": {
+        "image": "frontend:latest",
+        "ports": ["3000:3000"],
+        "environment": ["NEXT_PUBLIC_API_URL=http://backend:8000/api/v1"],
+        "depends_on": ["backend"]
+      },
+      "backend": {
+        "image": "backend:latest",
+        "ports": ["8000:8000"],
+        "environment": [
+          "DATABASE_URL=postgresql://ecommerce:pass@postgres:5432/ecommerce_db",
+          "REDIS_URL=redis://redis:6379/0"
+        ],
+        "depends_on": ["postgres", "redis"]
+      },
+      "postgres": {
+        "image": "postgres:15-alpine",
+        "ports": ["5432:5432"],
+        "environment": {
+          "POSTGRES_USER": "ecommerce",
+          "POSTGRES_PASSWORD": "secure_password",
+          "POSTGRES_DB": "ecommerce_db"
+        },
+        "volumes": ["postgres_data:/var/lib/postgresql/data"]
+      },
+      "redis": {
+        "image": "redis:7-alpine",
+        "ports": ["6379:6379"],
+        "volumes": ["redis_data:/data"]
+      },
+      "rabbitmq": {
+        "image": "rabbitmq:3.12-management-alpine",
+        "ports": ["5672:5672", "15672:15672"],
+        "environment": {
+          "RABBITMQ_DEFAULT_USER": "admin",
+          "RABBITMQ_DEFAULT_PASS": "admin"
+        }
+      }
+    },
+    "volumes": {
+      "postgres_data": {},
+      "redis_data": {}
+    }
+  },
+  "deployment_environments": [
+    {
+      "name": "development",
+      "type": "docker-compose",
+      "agents": "all",
+      "auto_deploy": true,
+      "quality_gates": ["QG-COMMIT"]
+    },
+    {
+      "name": "staging",
+      "type": "kubernetes",
+      "agents": "all",
+      "replicas": 1,
+      "auto_deploy": false,
+      "quality_gates": ["QG-COMMIT", "QG-PR", "QG-DEPLOY"]
+    },
+    {
+      "name": "production",
+      "type": "kubernetes",
+      "agents": "all",
+      "replicas": 3,
+      "auto_scale": {"enabled": true, "min": 3, "max": 10},
+      "auto_deploy": false,
+      "requires_approval": true,
+      "quality_gates": ["QG-COMMIT", "QG-PR", "QG-DEPLOY", "QG-MONITOR"]
+    }
+  ],
+  "implementation_guide": {
+    "step_1_load_config": "Load this JSON in your LLM orchestration framework",
+    "step_2_initialize_agents": "Create agent instances from agent definitions",
+    "step_3_setup_communication": "Setup gRPC, HTTP/2, and message broker connections",
+    "step_4_deploy_services": "Deploy PostgreSQL, Redis, RabbitMQ using docker-compose",
+    "step_5_run_workflows": "Execute workflow templates using orchestrator",
+    "step_6_monitor": "Use Prometheus/Grafana for monitoring",
+    "langchain_example": "See LangChain integration examples in README",
+    "autogpt_example": "See AutoGPT integration examples in README"
+  }
+}
