@@ -8,6 +8,12 @@ import { Menu, X, ShoppingCart, LogOut, LogIn } from 'lucide-react';
 import MegaMenu from './MegaMenu';
 import MobileMenu from './MobileMenu';
 
+export interface NavCategory {
+  name: string;
+  href: string;
+  items: { label: string; href: string }[];
+}
+
 export default function Navbar() {
   const router = useRouter();
   const { user, isLoggedIn, logout } = useAuthStore();
@@ -28,26 +34,54 @@ export default function Navbar() {
 
   if (!mounted) return null;
 
-  const megaMenuCategories = [
+  const megaMenuCategories: NavCategory[] = [
     {
-      name: 'Mens Wear',
-      items: ['Stitched', 'Unstitched', 'Wash & Wear', 'Summer Collection', 'Sale'],
+      name: "Men's Wear",
       href: '/products/category/mens',
+      items: [
+        { label: 'Stitched',          href: '/products/category/stitched' },
+        { label: 'Unstitched',        href: '/products/category/unstitched' },
+        { label: 'Wash & Wear',       href: '/products/category/wash-wear' },
+        { label: 'Shalwar Kameez',    href: '/products/category/shalwar-kameez' },
+        { label: 'Kurtas',            href: '/products/category/kurtas' },
+        { label: 'Sale',              href: '/products/category/sale' },
+      ],
     },
     {
-      name: 'Womens Wear',
-      items: ['Stitched', 'Unstitched', 'Lawn', 'Chiffon', 'Linen', 'Party Wear', 'Sale'],
+      name: "Women's Wear",
       href: '/products/category/womens',
+      items: [
+        { label: 'Stitched',          href: '/products/category/stitched' },
+        { label: 'Unstitched',        href: '/products/category/unstitched' },
+        { label: 'Lawn',              href: '/products/category/lawn' },
+        { label: 'Chiffon',           href: '/products/category/chiffon' },
+        { label: 'Embroidered',       href: '/products/category/embroidered' },
+        { label: 'Party Wear',        href: '/products/category/party-wear' },
+      ],
     },
     {
-      name: 'Seasonal',
-      items: ['Summer 2025', 'Winter 2025'],
+      name: 'Collections',
       href: '/products',
+      items: [
+        { label: 'New Arrivals',      href: '/products' },
+        { label: 'Best Sellers',      href: '/products' },
+        { label: 'Eid Collection',    href: '/products/category/eid' },
+        { label: 'Summer 2025',       href: '/products/category/summer' },
+        { label: 'Winter 2025',       href: '/products/category/winter' },
+        { label: 'Sale Items',        href: '/products/category/sale' },
+      ],
     },
     {
-      name: 'Shop',
-      items: ['New Arrivals', 'Best Sellers', 'Sale Items', 'All Products'],
+      name: 'Brands',
       href: '/products',
+      items: [
+        { label: 'Khaadi',            href: '/products/brand/khaadi' },
+        { label: 'Sapphire',          href: '/products/brand/sapphire' },
+        { label: 'Gul Ahmed',         href: '/products/brand/gul-ahmed' },
+        { label: 'Maria.B',           href: '/products/brand/maria-b' },
+        { label: 'Alkaram',           href: '/products/brand/alkaram' },
+        { label: 'All Products',      href: '/products' },
+      ],
     },
   ];
 
@@ -70,9 +104,12 @@ export default function Navbar() {
                 onMouseEnter={() => setActiveMegaMenu(category.name)}
                 onMouseLeave={() => setActiveMegaMenu(null)}
               >
-                <button className="text-cream hover:text-gold transition py-2 font-medium">
+                <Link
+                  href={category.href}
+                  className="text-cream hover:text-gold transition py-2 font-medium"
+                >
                   {category.name}
-                </button>
+                </Link>
                 {activeMegaMenu === category.name && (
                   <MegaMenu category={category} />
                 )}
@@ -83,7 +120,7 @@ export default function Navbar() {
           {/* Right Section */}
           <div className="flex gap-4 items-center">
             {/* Cart Icon */}
-            <Link href="/cart" className="relative hover:text-gold transition">
+            <Link href="/cart" className="relative hover:text-gold transition text-cream">
               <ShoppingCart className="w-6 h-6" />
               {cartItems.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-gold text-charcoal text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -138,7 +175,7 @@ export default function Navbar() {
           </Link>
 
           <div className="flex gap-3 items-center">
-            <Link href="/cart" className="relative">
+            <Link href="/cart" className="relative text-cream hover:text-gold transition">
               <ShoppingCart className="w-5 h-5" />
               {cartItems.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-gold text-charcoal text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
