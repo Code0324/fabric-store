@@ -151,6 +151,17 @@ export const ordersAPI = {
     api.get(`/orders/`, { params: { page, limit } }),
 
   /**
+   * List ALL orders (admin only). Supports filtering by status, payment_status, payment_method.
+   */
+  listAll: (params: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    payment_status?: string;
+    payment_method?: string;
+  } = {}) => api.get('/orders/admin', { params }),
+
+  /**
    * Get a single order by ID.
    */
   get: (id: string) => api.get<Order>(`/orders/${id}`),

@@ -190,6 +190,68 @@ def _deduct_stock(parsed_items: list[dict], db: Session) -> None:
 # Endpoints
 # ---------------------------------------------------------------------------
 
+@router.get("/admin", response_model=OrderListResponse, summary="List ALL orders (admin only)")
+def list_all_orders(
+    db: Session = Depends(get_db),
+    admin_id: str = Depends(get_current_admin),
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by order status"),
+    payment_status_filter: Optional[str] = Query(None, alias="payment_status", description="Filter by payment status"),
+    payment_method_filter: Optional[str] = Query(None, alias="payment_method", description="Filter by payment method"),
+):
+    """
+    Return every order in the system, with optional filters (admin only).
+
+    Filters:
+    - **status**: pending | confirmed | shipped | delivered | cancelled
+    - **payment_status**: Pending | Pending Verification | Paid | Rejected
+    - **payment_method**: cod | easypaisa | jazzcash
+    """
+    query = db.query(Order)
+
+    if status_filter:
+        allowed = {"pending", "confirmed", "shipped", "delivered", "cancelled"}
+        if status_filter not in allowed:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status '{status_filter}'. Allowed: {sorted(allowed)}.",
+            )
+        query = query.filter(Order.status == status_filter)
+
+    if payment_status_filter:
+        allowed_ps = {"Pending", "Pending Verification", "Paid", "Rejected"}
+        if payment_status_filter not in allowed_ps:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid payment_status '{payment_status_filter}'. Allowed: {sorted(allowed_ps)}.",
+            )
+        query = query.filter(Order.payment_status == payment_status_filter)
+
+    if payment_method_filter:
+        allowed_pm = {"cod", "easypaisa", "jazzcash"}
+        if payment_method_filter not in allowed_pm:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid payment_method '{payment_method_filter}'. Allowed: {sorted(allowed_pm)}.",
+            )
+        query = query.filter(Order.payment_method == payment_method_filter)
+
+    query = query.order_by(Order.created_at.desc())
+    total: int = query.count()
+    offset = (page - 1) * limit
+    orders = query.offset(offset).limit(limit).all()
+    pages = (total + limit - 1) // limit if total > 0 else 1
+
+    return OrderListResponse(
+        items=[OrderResponse.from_orm(o) for o in orders],
+        total=total,
+        page=page,
+        limit=limit,
+        pages=pages,
+    )
+
+
 @router.post(
     "/create",
     response_model=OrderResponse,
