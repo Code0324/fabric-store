@@ -1,25 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ordersAPI } from '@/lib/api';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import { formatPKR, generateWhatsAppURL } from '@/lib/utils';
-import { ChevronLeft, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, CheckCircle, Loader2, AlertCircle, Upload, X } from 'lucide-react';
 import type { Order } from '@/lib/types';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type PaymentMethod = 'cod' | 'easypaisa' | 'jazzcash';
+
+interface PaymentDetails {
+  label: string;
+  accountTitle: string;
+  number: string;
+}
+
+const PAYMENT_INFO: Record<'easypaisa' | 'jazzcash', PaymentDetails> = {
+  easypaisa: {
+    label: 'Easypaisa',
+    accountTitle: 'Al Imran Fabrics',
+    number: '03XX-XXXXXXX',  // Replace with real number
+  },
+  jazzcash: {
+    label: 'JazzCash',
+    accountTitle: 'Al Imran Fabrics',
+    number: '03XX-XXXXXXX',  // Replace with real number
+  },
+};
+
+const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  cod: 'Cash on Delivery (COD)',
+  easypaisa: 'Easypaisa',
+  jazzcash: 'JazzCash',
+};
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { isLoggedIn, token } = useAuthStore();
   const { items, total, customerName, phone, address, city, notes, clear } = useCartStore();
+
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
+  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [screenshotError, setScreenshotError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
-  const [redirectCountdown, setRedirectCountdown] = useState(3);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
+
   const cartTotal = total();
 
-  // Route protection: redirect if cart empty, customer info incomplete, or not authenticated
+  // Route protection
   useEffect(() => {
     if (!isLoggedIn || !token) {
       router.replace('/login?redirect=/checkout');
@@ -35,7 +78,7 @@ export default function CheckoutPage() {
     }
   }, [isLoggedIn, token, items.length, customerName, phone, address, router]);
 
-  // 3-second countdown redirect after order is confirmed
+  // Countdown redirect after order is confirmed
   useEffect(() => {
     if (!confirmedOrder) return;
     if (redirectCountdown <= 0) {
@@ -46,9 +89,71 @@ export default function CheckoutPage() {
     return () => clearTimeout(timer);
   }, [confirmedOrder, redirectCountdown, router]);
 
-  const handleCODCheckout = async (e: React.FormEvent) => {
+  // Clear screenshot when switching to COD
+  useEffect(() => {
+    if (paymentMethod === 'cod') {
+      setScreenshot(null);
+      setScreenshotPreview(null);
+      setScreenshotError('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [paymentMethod]);
+
+  // ---------------------------------------------------------------------------
+  // File handling
+  // ---------------------------------------------------------------------------
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setScreenshotError('');
+
+    if (!file) {
+      setScreenshot(null);
+      setScreenshotPreview(null);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setScreenshotError('Only image files are accepted (JPEG, PNG, WebP, etc.).');
+      setScreenshot(null);
+      setScreenshotPreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setScreenshotError('File size must be under 5 MB.');
+      setScreenshot(null);
+      setScreenshotPreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setScreenshot(file);
+    setScreenshotPreview(URL.createObjectURL(file));
+  };
+
+  const removeScreenshot = () => {
+    setScreenshot(null);
+    setScreenshotPreview(null);
+    setScreenshotError('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // ---------------------------------------------------------------------------
+  // Submit
+  // ---------------------------------------------------------------------------
+
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate screenshot requirement
+    if (paymentMethod !== 'cod' && !screenshot) {
+      setScreenshotError('Please upload a payment screenshot to continue.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -62,13 +167,14 @@ export default function CheckoutPage() {
         customer_address: address,
         customer_city: city,
         customer_notes: notes,
-        payment_method: 'cod' as const,
+        payment_method: paymentMethod,
+        screenshot: screenshot ?? undefined,
       };
 
-      const response = await ordersAPI.create(orderData);
+      const response = await ordersAPI.createWithPayment(orderData);
       const placedOrder: Order = response.data;
 
-      // Send WhatsApp notification
+      // WhatsApp notification
       const waURL = generateWhatsAppURL({
         items,
         totalAmount: cartTotal,
@@ -80,10 +186,7 @@ export default function CheckoutPage() {
       });
       window.open(waURL, '_blank');
 
-      // Clear cart from Zustand
       clear();
-
-      // Show confirmation state; countdown to /orders redirect starts via useEffect
       setConfirmedOrder(placedOrder);
     } catch (err: any) {
       const detail = err.response?.data?.detail;
@@ -99,8 +202,12 @@ export default function CheckoutPage() {
     }
   };
 
-  // Show order confirmation screen
+  // ---------------------------------------------------------------------------
+  // Order confirmation screen
+  // ---------------------------------------------------------------------------
+
   if (confirmedOrder) {
+    const isManual = confirmedOrder.payment_method !== 'cod';
     return (
       <div className="min-h-screen py-12">
         <div className="container">
@@ -110,7 +217,9 @@ export default function CheckoutPage() {
             </div>
             <h1 className="text-3xl font-serif font-bold text-cream mb-4">Order Placed!</h1>
             <p className="text-muted mb-6">
-              Your order has been received and is being processed. A WhatsApp confirmation has been sent.
+              {isManual
+                ? 'Your order has been received. We will verify your payment screenshot and confirm your order shortly.'
+                : 'Your order has been received and is being processed. A WhatsApp confirmation has been sent.'}
             </p>
 
             <div className="card text-left mb-8">
@@ -122,29 +231,48 @@ export default function CheckoutPage() {
               </div>
               <div className="mb-4 pb-4 border-b border-border">
                 <p className="text-xs text-muted uppercase mb-1">Payment Method</p>
-                <p className="text-cream font-medium">Cash on Delivery (COD)</p>
+                <p className="text-cream font-medium">
+                  {PAYMENT_LABELS[confirmedOrder.payment_method as PaymentMethod] ?? confirmedOrder.payment_method}
+                </p>
+              </div>
+              <div className="mb-4 pb-4 border-b border-border">
+                <p className="text-xs text-muted uppercase mb-1">Payment Status</p>
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                  confirmedOrder.payment_status === 'Pending Verification'
+                    ? 'bg-blue-900 text-blue-200'
+                    : 'bg-yellow-900 text-yellow-200'
+                }`}>
+                  {confirmedOrder.payment_status}
+                </span>
               </div>
               <div className="mb-4 pb-4 border-b border-border">
                 <p className="text-xs text-muted uppercase mb-1">Total Amount</p>
                 <p className="text-gold font-bold text-xl">{formatPKR(confirmedOrder.total_amount)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted uppercase mb-1">Status</p>
+                <p className="text-xs text-muted uppercase mb-1">Order Status</p>
                 <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-yellow-900 text-yellow-200">
                   Pending
                 </span>
               </div>
             </div>
 
+            {isManual && (
+              <div className="bg-blue-950/40 border border-blue-700/30 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm text-blue-300">
+                  <strong>Next step:</strong> Our team will review your payment screenshot within 1–2 hours
+                  and confirm your order via WhatsApp.
+                </p>
+              </div>
+            )}
+
             <p className="text-sm text-muted mb-6">
               Redirecting to your orders in{' '}
-              <span className="text-gold font-bold">{redirectCountdown}</span> second{redirectCountdown !== 1 ? 's' : ''}...
+              <span className="text-gold font-bold">{redirectCountdown}</span>{' '}
+              second{redirectCountdown !== 1 ? 's' : ''}...
             </p>
 
-            <button
-              onClick={() => router.push('/orders')}
-              className="btn btn-primary"
-            >
+            <button onClick={() => router.push('/orders')} className="btn btn-primary">
               View My Orders
             </button>
           </div>
@@ -153,10 +281,17 @@ export default function CheckoutPage() {
     );
   }
 
-  // Guard: while route protection useEffect is running, show nothing to avoid flash
+  // Guard while route-protection useEffect runs
   if (!isLoggedIn || items.length === 0 || !customerName) {
     return null;
   }
+
+  const needsScreenshot = paymentMethod !== 'cod';
+  const paymentInfo = paymentMethod !== 'cod' ? PAYMENT_INFO[paymentMethod] : null;
+
+  // ---------------------------------------------------------------------------
+  // Checkout form
+  // ---------------------------------------------------------------------------
 
   return (
     <div className="min-h-screen py-12">
@@ -182,13 +317,17 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Checkout Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handleCODCheckout} className="space-y-8">
+              <form onSubmit={handleCheckout} className="space-y-8">
+
                 {/* Order Items Summary */}
                 <div className="card">
                   <h2 className="font-serif font-bold text-cream mb-6">Order Items</h2>
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={item.product.id} className="flex justify-between items-center border-b border-border pb-4 last:border-0 last:pb-0">
+                      <div
+                        key={item.product.id}
+                        className="flex justify-between items-center border-b border-border pb-4 last:border-0 last:pb-0"
+                      >
                         <div className="flex items-center gap-3">
                           {item.product.image_url && (
                             <img
@@ -200,18 +339,23 @@ export default function CheckoutPage() {
                           <div>
                             <h3 className="font-medium text-cream text-sm">{item.product.name}</h3>
                             <p className="text-xs text-muted">{item.product.brand}</p>
-                            <p className="text-xs text-muted">Qty: {item.quantity} × {formatPKR(item.product.price)}</p>
+                            <p className="text-xs text-muted">
+                              Qty: {item.quantity} × {formatPKR(item.product.price)}
+                            </p>
                           </div>
                         </div>
-                        <p className="text-gold font-bold whitespace-nowrap">{formatPKR(item.product.price * item.quantity)}</p>
+                        <p className="text-gold font-bold whitespace-nowrap">
+                          {formatPKR(item.product.price * item.quantity)}
+                        </p>
                       </div>
                     ))}
                   </div>
 
-                  {/* Subtotal and total inside items card */}
                   <div className="mt-4 pt-4 border-t border-border space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted">Subtotal ({items.length} item{items.length !== 1 ? 's' : ''})</span>
+                      <span className="text-muted">
+                        Subtotal ({items.length} item{items.length !== 1 ? 's' : ''})
+                      </span>
                       <span className="text-cream">{formatPKR(cartTotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -275,32 +419,181 @@ export default function CheckoutPage() {
                     {notes && (
                       <div>
                         <label className="form-label">Special Notes</label>
-                        <textarea value={notes} disabled className="input opacity-60 cursor-not-allowed" rows={3} />
+                        <textarea
+                          value={notes}
+                          disabled
+                          className="input opacity-60 cursor-not-allowed"
+                          rows={3}
+                        />
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Payment Method */}
+                {/* Payment Method Selection */}
                 <div className="card">
                   <h2 className="font-serif font-bold text-cream mb-6">Payment Method</h2>
-                  <div className="bg-gold/10 border border-gold/30 rounded-lg p-4 mb-6">
-                    <div className="flex items-start gap-3">
-                      <input type="radio" name="payment" id="cod" defaultChecked className="mt-1" />
-                      <div className="flex-1">
-                        <label htmlFor="cod" className="font-medium text-cream cursor-pointer">
-                          Cash on Delivery (COD)
-                        </label>
-                        <p className="text-sm text-muted mt-1">
-                          Pay when your order is delivered. Free delivery on all orders.
+
+                  <div className="space-y-3 mb-6">
+                    {/* COD */}
+                    <label
+                      className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition ${
+                        paymentMethod === 'cod'
+                          ? 'border-gold bg-gold/10'
+                          : 'border-border hover:border-gold/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value="cod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={() => setPaymentMethod('cod')}
+                        className="mt-1 accent-gold"
+                      />
+                      <div>
+                        <p className="font-medium text-cream">Cash on Delivery (COD)</p>
+                        <p className="text-sm text-muted mt-0.5">
+                          Pay when your order is delivered. No advance payment needed.
                         </p>
                       </div>
-                    </div>
+                    </label>
+
+                    {/* Easypaisa */}
+                    <label
+                      className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition ${
+                        paymentMethod === 'easypaisa'
+                          ? 'border-gold bg-gold/10'
+                          : 'border-border hover:border-gold/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value="easypaisa"
+                        checked={paymentMethod === 'easypaisa'}
+                        onChange={() => setPaymentMethod('easypaisa')}
+                        className="mt-1 accent-gold"
+                      />
+                      <div>
+                        <p className="font-medium text-cream">Easypaisa</p>
+                        <p className="text-sm text-muted mt-0.5">
+                          Transfer to our Easypaisa account and upload proof of payment.
+                        </p>
+                      </div>
+                    </label>
+
+                    {/* JazzCash */}
+                    <label
+                      className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition ${
+                        paymentMethod === 'jazzcash'
+                          ? 'border-gold bg-gold/10'
+                          : 'border-border hover:border-gold/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        value="jazzcash"
+                        checked={paymentMethod === 'jazzcash'}
+                        onChange={() => setPaymentMethod('jazzcash')}
+                        className="mt-1 accent-gold"
+                      />
+                      <div>
+                        <p className="font-medium text-cream">JazzCash</p>
+                        <p className="text-sm text-muted mt-0.5">
+                          Transfer to our JazzCash account and upload proof of payment.
+                        </p>
+                      </div>
+                    </label>
                   </div>
 
+                  {/* Payment details card (Easypaisa / JazzCash) */}
+                  {paymentInfo && (
+                    <div className="bg-charcoal border border-gold/30 rounded-lg p-5 mb-6">
+                      <h3 className="font-semibold text-gold mb-3">
+                        {paymentInfo.label} Transfer Details
+                      </h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted">Account Title</span>
+                          <span className="text-cream font-medium">{paymentInfo.accountTitle}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted">Account Number</span>
+                          <span className="text-gold font-bold font-mono">{paymentInfo.number}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted">Amount to Transfer</span>
+                          <span className="text-gold font-bold">{formatPKR(cartTotal)}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted mt-4">
+                        Please transfer the exact amount and upload the payment screenshot below.
+                        Your order will be confirmed after verification.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Screenshot upload (Easypaisa / JazzCash only) */}
+                  {needsScreenshot && (
+                    <div className="mb-6">
+                      <label className="form-label mb-2">
+                        Payment Screenshot <span className="text-danger">*</span>
+                      </label>
+
+                      {!screenshotPreview ? (
+                        <div
+                          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
+                            screenshotError
+                              ? 'border-danger bg-danger/5'
+                              : 'border-border hover:border-gold/50 hover:bg-gold/5'
+                          }`}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="w-8 h-8 text-muted mx-auto mb-2" />
+                          <p className="text-sm text-cream font-medium">Click to upload screenshot</p>
+                          <p className="text-xs text-muted mt-1">JPEG, PNG, WebP — max 5 MB</p>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                      ) : (
+                        <div className="relative inline-block">
+                          <img
+                            src={screenshotPreview}
+                            alt="Payment screenshot preview"
+                            className="max-h-48 rounded-lg border border-border object-contain"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeScreenshot}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-danger rounded-full flex items-center justify-center"
+                          >
+                            <X className="w-3.5 h-3.5 text-white" />
+                          </button>
+                          <p className="text-xs text-success mt-2 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" /> {screenshot?.name}
+                          </p>
+                        </div>
+                      )}
+
+                      {screenshotError && (
+                        <p className="text-danger text-xs mt-2 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" /> {screenshotError}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Submit button */}
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || (needsScreenshot && !screenshot)}
                     className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {loading ? (
@@ -309,7 +602,7 @@ export default function CheckoutPage() {
                         Placing Order...
                       </>
                     ) : (
-                      'Place Order (COD)'
+                      `Place Order — ${PAYMENT_LABELS[paymentMethod]}`
                     )}
                   </button>
 
@@ -331,9 +624,12 @@ export default function CheckoutPage() {
                   {items.map((item) => (
                     <div key={item.product.id} className="flex justify-between text-sm">
                       <span className="text-muted truncate mr-2">
-                        {item.product.name} <span className="text-gold">×{item.quantity}</span>
+                        {item.product.name}{' '}
+                        <span className="text-gold">×{item.quantity}</span>
                       </span>
-                      <span className="text-cream whitespace-nowrap">{formatPKR(item.product.price * item.quantity)}</span>
+                      <span className="text-cream whitespace-nowrap">
+                        {formatPKR(item.product.price * item.quantity)}
+                      </span>
                     </div>
                   ))}
                 </div>

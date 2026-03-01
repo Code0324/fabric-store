@@ -48,8 +48,10 @@ export interface Order {
   customer_notes?: string;
   items: OrderItem[];
   total_amount: number;
-  payment_method: 'cod' | 'card';
-  status: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled';
+  payment_method: 'cod' | 'easypaisa' | 'jazzcash';
+  payment_status: string;
+  payment_screenshot?: string;
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
   created_at: string;
   updated_at: string;
 }
@@ -117,5 +119,6 @@ export interface OrderCreateRequest {
   customer_address?: string;
   customer_city?: string;
   customer_notes?: string;
-  payment_method: 'cod' | 'card';
+  payment_method: 'cod' | 'easypaisa' | 'jazzcash';
+  screenshot?: File;
 }

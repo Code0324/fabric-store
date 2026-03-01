@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     'Discover premium Pakistani fabrics for mens and womens wear. Shop stitched, unstitched, lawn, chiffon, and linen fabrics with free nationwide delivery.',
   keywords: 'Pakistani fabrics, stitched wear, unstitched fabric, lawn, chiffon, linen, womens wear, mens wear',
   viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#0A0A0A',
+  themeColor: '#FAF7F2',
   metadataBase: new URL('https://alimranfabrics.com'),
   openGraph: {
     title: 'AL Imran Fabrics | Premium Pakistani Fabrics',
@@ -43,7 +43,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-charcoal text-cream">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

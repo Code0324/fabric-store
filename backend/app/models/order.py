@@ -13,7 +13,7 @@ class Order(Base):
     # Primary Key
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
 
-    # User reference (string until User model is introduced)
+    # User reference
     user_id = Column(String(36), nullable=False, index=True)
 
     # Customer delivery info
@@ -26,19 +26,21 @@ class Order(Base):
     # Financials
     total_amount = Column(Float, nullable=False, default=0.0)
 
-    # Payment method: 'cod' | 'card'
-    payment_method = Column(
-        String(10),
-        nullable=False,
-        default="cod"
-    )
+    # Payment method: 'cod' | 'easypaisa' | 'jazzcash'
+    payment_method = Column(String(20), nullable=False, default="cod")
+
+    # Payment status: 'Pending' | 'Pending Verification' | 'Paid' | 'Rejected'
+    payment_status = Column(String(30), nullable=False, default="Pending")
+
+    # Path to uploaded payment screenshot (Easypaisa / JazzCash only)
+    payment_screenshot = Column(String(500), nullable=True)
 
     # Order status
     status = Column(
         String(20),
         nullable=False,
         default="pending",
-        index=True
+        index=True,
     )
 
     # Timestamps
@@ -50,23 +52,22 @@ class Order(Base):
         "OrderItem",
         back_populates="order",
         cascade="all, delete-orphan",
-        lazy="selectin"
+        lazy="selectin",
     )
 
-    # Table-level constraints
     __table_args__ = (
         CheckConstraint(
-            "payment_method IN ('cod', 'card')",
-            name="ck_order_payment_method"
-        ),
-        CheckConstraint(
             "status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')",
-            name="ck_order_status"
+            name="ck_order_status",
         ),
     )
 
     def __repr__(self):
-        return f"<Order(id={self.id}, user_id={self.user_id}, status={self.status}, total={self.total_amount})>"
+        return (
+            f"<Order(id={self.id}, user_id={self.user_id}, "
+            f"status={self.status}, payment_status={self.payment_status}, "
+            f"total={self.total_amount})>"
+        )
 
 
 class OrderItem(Base):
@@ -91,4 +92,7 @@ class OrderItem(Base):
     product = relationship("Product", lazy="selectin")
 
     def __repr__(self):
-        return f"<OrderItem(id={self.id}, order_id={self.order_id}, product_id={self.product_id}, qty={self.quantity})>"
+        return (
+            f"<OrderItem(id={self.id}, order_id={self.order_id}, "
+            f"product_id={self.product_id}, qty={self.quantity})>"
+        )

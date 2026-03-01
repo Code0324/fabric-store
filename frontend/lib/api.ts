@@ -146,24 +146,53 @@ export const productsAPI = {
 export const ordersAPI = {
   /**
    * List orders for the authenticated user.
-   * Backend supports page/limit query params.
    */
   list: (page = 1, limit = 20) =>
     api.get(`/orders/`, { params: { page, limit } }),
+
   /**
    * Get a single order by ID.
    */
   get: (id: string) => api.get<Order>(`/orders/${id}`),
+
   /**
-   * Create a new order from cart items.
+   * Create a new order (JSON – legacy, no screenshot).
    */
   create: (data: OrderCreateRequest) =>
     api.post<Order>('/orders/', data),
+
   /**
-   * Update order status (admin only).
+   * Create a new order with manual payment screenshot (multipart/form-data).
+   * Supports Easypaisa, JazzCash, and COD payment methods.
+   */
+  createWithPayment: (data: OrderCreateRequest) => {
+    const formData = new FormData();
+    formData.append('items', JSON.stringify(data.items));
+    formData.append('customer_name', data.customer_name ?? '');
+    formData.append('customer_phone', data.customer_phone ?? '');
+    formData.append('customer_address', data.customer_address ?? '');
+    formData.append('customer_city', data.customer_city ?? '');
+    if (data.customer_notes) formData.append('customer_notes', data.customer_notes);
+    formData.append('payment_method', data.payment_method);
+    if (data.screenshot) formData.append('screenshot', data.screenshot);
+
+    return api.post<Order>('/orders/create', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  /**
+   * Update order fulfillment status (admin only).
    */
   updateStatus: (id: string, status: string) =>
     api.put<Order>(`/orders/${id}/status`, { status }),
+
+  /**
+   * Verify or reject a manual payment screenshot (admin only).
+   * payment_status must be "Paid" or "Rejected".
+   */
+  verifyPayment: (id: string, payment_status: 'Paid' | 'Rejected') =>
+    api.put<Order>(`/orders/${id}/verify`, { payment_status }),
 };
 
 /**

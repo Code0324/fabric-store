@@ -34,36 +34,52 @@ export const MenCollection = ({
   const visible = products.slice(carouselIndex, carouselIndex + ITEMS_PER_PAGE);
 
   return (
-    <section className="bg-surface">
+    <section style={{ background: '#FFFFFF' }}>
       {/* Banner */}
       <div
-        className="relative h-56 md:h-72 flex items-center justify-end overflow-hidden"
+        className="relative flex items-center justify-end overflow-hidden"
         style={{
+          height: '280px',
           backgroundImage: 'url(/images/men-banner.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundColor: '#0f1a2e',
+          backgroundColor: '#F5F0E8',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent" />
+        {/* Ivory gradient — text side (right) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(to left, rgba(245,240,232,0.92) 0%, rgba(245,240,232,0.68) 40%, rgba(245,240,232,0.10) 100%)',
+          }}
+        />
         <div className="relative z-10 px-8 md:px-16 lg:px-24 text-right">
-          <p className="text-gold text-xs font-bold uppercase tracking-[0.25em] mb-2">
+          <p className="section-label" style={{ marginBottom: '10px' }}>
             New Arrivals
           </p>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-5 leading-tight font-serif">
+          <h2
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(36px, 5vw, 56px)',
+              fontWeight: 300,
+              fontStyle: 'italic',
+              color: '#1A1A1A',
+              lineHeight: 1.1,
+              marginBottom: '20px',
+              letterSpacing: '1px',
+            }}
+          >
             Men&apos;s Collection
           </h2>
-          <Link
-            href="/products"
-            className="inline-block px-7 py-3 bg-gold text-charcoal text-sm font-bold rounded-lg hover:bg-gold-light transition-all shadow-lg"
-          >
-            View All →
+          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '20px', marginLeft: 'auto' }}>✦</div>
+          <Link href="/products" className="btn btn-primary" style={{ padding: '10px 28px' }}>
+            View All
           </Link>
         </div>
       </div>
 
       {/* Category Icons */}
-      <div className="bg-charcoal border-b border-border">
+      <div style={{ background: '#FAF7F2', borderBottom: '1px solid #E0D8CC' }}>
         <div className="container px-4 py-5">
           <div className="flex items-center justify-center gap-6 md:gap-10 overflow-x-auto scrollbar-hide">
             {MEN_CATEGORIES.map(({ icon: Icon, label, href }) => (
@@ -72,10 +88,35 @@ export const MenCollection = ({
                 href={href}
                 className="flex flex-col items-center gap-2 group flex-shrink-0"
               >
-                <div className="w-[52px] h-[52px] rounded-full bg-surface border-2 border-border group-hover:border-gold flex items-center justify-center transition-all shadow-sm">
+                <div
+                  className="flex items-center justify-center transition-all"
+                  style={{
+                    width: '52px',
+                    height: '52px',
+                    border: '1px solid #E0D8CC',
+                    background: '#FFFFFF',
+                    transition: 'border-color 0.2s ease',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = '#B8963E';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.borderColor = '#E0D8CC';
+                  }}
+                >
                   <Icon className="w-5 h-5 text-muted group-hover:text-gold transition-colors" />
                 </div>
-                <span className="text-xs font-medium text-muted group-hover:text-gold transition-colors whitespace-nowrap">
+                <span
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    fontSize: '10px',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    color: '#6B6560',
+                    whiteSpace: 'nowrap',
+                  }}
+                  className="group-hover:text-gold transition-colors"
+                >
                   {label}
                 </span>
               </Link>
@@ -85,51 +126,97 @@ export const MenCollection = ({
       </div>
 
       {/* Product Grid */}
-      <div className="container px-4 py-10">
-        <div className="flex items-center justify-between mb-7">
+      <div className="container px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h3 className="text-2xl font-serif font-bold text-cream">Featured for Men</h3>
-            <p className="text-muted text-sm mt-1">Premium quality menswear for every occasion</p>
+            <p className="section-label" style={{ marginBottom: '6px' }}>Featured for Him</p>
+            <h3
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: '28px',
+                fontWeight: 300,
+                color: '#1A1A1A',
+              }}
+            >
+              Men&apos;s Picks
+            </h3>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handlePrev}
               disabled={products.length <= ITEMS_PER_PAGE}
-              className="p-2.5 rounded-full border border-border text-muted hover:border-gold hover:text-gold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{
+                width: '38px',
+                height: '38px',
+                border: '1px solid #E0D8CC',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#6B6560',
+                transition: 'border-color 0.2s ease, color 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#B8963E';
+                (e.currentTarget as HTMLButtonElement).style.color = '#B8963E';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#E0D8CC';
+                (e.currentTarget as HTMLButtonElement).style.color = '#6B6560';
+              }}
               aria-label="Previous"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleNext}
               disabled={products.length <= ITEMS_PER_PAGE}
-              className="p-2.5 rounded-full border border-border text-muted hover:border-gold hover:text-gold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              style={{
+                width: '38px',
+                height: '38px',
+                border: '1px solid #E0D8CC',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#6B6560',
+                transition: 'border-color 0.2s ease, color 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#B8963E';
+                (e.currentTarget as HTMLButtonElement).style.color = '#B8963E';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = '#E0D8CC';
+                (e.currentTarget as HTMLButtonElement).style.color = '#6B6560';
+              }}
               aria-label="Next"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin" />
+            <div className="loading" />
           </div>
         ) : visible.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {visible.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {visible.map((product, i) => (
+              <div key={product.id} className={`fade-up stagger-${Math.min(i + 1, 8)}`} style={{ opacity: 0, animationFillMode: 'forwards' }}>
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-16 text-muted">No men&apos;s products yet</div>
         )}
 
-        <div className="text-center mt-10">
-          <Link
-            href="/products"
-            className="inline-block px-10 py-3 border border-gold text-gold font-bold rounded-lg hover:bg-gold hover:text-charcoal transition-all"
-          >
+        <div className="text-center mt-12">
+          <Link href="/products" className="btn btn-outline" style={{ padding: '12px 40px' }}>
             View All Men&apos;s Products
           </Link>
         </div>

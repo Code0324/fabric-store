@@ -8,47 +8,70 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Premium black & gold palette
-        charcoal: '#0A0A0A',
-        surface: '#141414',
-        border: '#2A2A2A',
-        gold: '#C9A84C',
-        'gold-light': '#E8C76A',
-        'gold-dark': '#A07A30',
-        cream: '#F5F0E8',
-        muted: '#8A8A8A',
-        // Standard colors
-        primary: '#C9A84C',
-        secondary: '#E8C76A',
-        danger: '#E53E3E',
-        success: '#38A169',
+        // Light-theme palette — semantic names preserved so all components remap automatically
+        charcoal:     '#FAF7F2',   // main bg  (was #0A0A0A)
+        surface:      '#FFFFFF',   // card bg   (was #141414)
+        border:       '#E0D8CC',   // borders   (was #2A2A2A)
+        gold:         '#B8963E',   // accent    (was #C9A84C)
+        'gold-light': '#D4AF5A',   // hover     (was #E8C76A)
+        'gold-dark':  '#9A7A2E',   // pressed   (was #A07A30)
+        cream:        '#1A1A1A',   // text      (was #F5F0E8)
+        muted:        '#6B6560',   // secondary text
+        // New additions
+        ivory:        '#F5F0E8',   // secondary bg
+        dark:         '#1A1A1A',   // explicit dark for CTA
+        primary:      '#B8963E',
+        secondary:    '#D4AF5A',
+        danger:       '#E53E3E',
+        success:      '#38A169',
       },
       fontFamily: {
-        serif: ['Cormorant Garamond', 'serif'],
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans:  ['Jost', 'system-ui', '-apple-system', 'sans-serif'],
       },
       fontSize: {
-        xs: ['12px', '16px'],
-        sm: ['14px', '20px'],
-        base: ['16px', '24px'],
-        lg: ['18px', '28px'],
-        xl: ['20px', '28px'],
+        '2xs': ['10px', '14px'],
+        xs:    ['11px', '16px'],
+        sm:    ['13px', '20px'],
+        base:  ['15px', '24px'],
+        lg:    ['17px', '26px'],
+        xl:    ['20px', '28px'],
         '2xl': ['24px', '32px'],
-        '3xl': ['30px', '36px'],
-        '4xl': ['36px', '40px'],
-        '5xl': ['48px', '48px'],
+        '3xl': ['32px', '38px'],
+        '4xl': ['42px', '48px'],
+        '5xl': ['52px', '56px'],
+        '6xl': ['64px', '68px'],
+      },
+      borderRadius: {
+        none:    '0',
+        sm:      '1px',
+        DEFAULT: '0',
+        md:      '1px',
+        lg:      '2px',
+        xl:      '2px',
+        '2xl':   '2px',
+        '3xl':   '2px',
+        full:    '9999px',
       },
       boxShadow: {
-        sm: '0 1px 2px rgba(0, 0, 0, 0.5)',
-        base: '0 4px 6px rgba(0, 0, 0, 0.6)',
-        md: '0 10px 15px rgba(0, 0, 0, 0.7)',
-        lg: '0 20px 25px rgba(0, 0, 0, 0.8)',
-        xl: '0 25px 50px rgba(0, 0, 0, 0.9)',
-        glow: '0 0 20px rgba(201, 168, 76, 0.3)',
+        sm:   '0 1px 4px rgba(0,0,0,0.04)',
+        base: '0 2px 20px rgba(0,0,0,0.04)',
+        md:   '0 4px 16px rgba(0,0,0,0.08)',
+        lg:   '0 12px 40px rgba(0,0,0,0.10)',
+        xl:   '0 20px 60px rgba(0,0,0,0.12)',
+        glow: '0 0 40px rgba(184,150,62,0.15)',
+        card: '0 12px 40px rgba(0,0,0,0.10)',
+        nav:  '0 2px 20px rgba(0,0,0,0.04)',
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(135deg, #C9A84C 0%, #E8C76A 100%)',
-        'dark-gradient': 'linear-gradient(135deg, #0A0A0A 0%, #141414 100%)',
+        'gold-gradient':  'linear-gradient(135deg, #B8963E 0%, #D4AF5A 100%)',
+        'hero-gradient':  'linear-gradient(135deg, #FAF7F2 0%, #F0E6C8 50%, #FAF7F2 100%)',
+        'dark-gradient':  'linear-gradient(135deg, #1A1A1A 0%, #2C2420 100%)',
+        'ivory-gradient': 'linear-gradient(135deg, #F5F0E8 0%, #EDE5D4 100%)',
+      },
+      letterSpacing: {
+        widest: '0.25em',
+        ultra:  '0.35em',
       },
     },
   },

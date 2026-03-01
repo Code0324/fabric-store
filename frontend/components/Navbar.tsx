@@ -84,13 +84,14 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="bg-charcoal border-b border-border sticky top-0 z-50" suppressHydrationWarning>
+    <header className="bg-surface border-b border-border sticky top-0 z-50 shadow-nav" suppressHydrationWarning>
       <div className="container py-4">
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="text-3xl font-serif font-bold gradient-gold hover:opacity-80 transition">
-            AL Imran
+          <Link href="/" className="hover:opacity-80 transition" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '4px', lineHeight: 1 }}>
+            <span style={{ color: '#1A1A1A' }}>AL IMRAN </span>
+            <span style={{ color: '#B8963E' }}>FABRICS</span>
           </Link>
 
           {/* Mega Menu */}
@@ -104,7 +105,7 @@ export default function Navbar() {
               >
                 <Link
                   href={category.href}
-                  className="text-cream hover:text-gold transition py-2 font-medium"
+                  className="nav-link"
                 >
                   {category.name}
                 </Link>
@@ -168,8 +169,9 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center justify-between">
-          <Link href="/" className="text-2xl font-serif font-bold gradient-gold">
-            AL Imran
+          <Link href="/" className="hover:opacity-80 transition" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', fontWeight: 400, letterSpacing: '3px' }}>
+            <span style={{ color: '#1A1A1A' }}>AL IMRAN </span>
+            <span style={{ color: '#B8963E' }}>FABRICS</span>
           </Link>
 
           <div className="flex gap-3 items-center">

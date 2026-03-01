@@ -4,9 +4,11 @@ Multi-brand women's fashion e-commerce platform
 """
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.routers import products, admin, orders, auth
@@ -43,6 +45,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve uploaded payment screenshots at /uploads/...
+_uploads_dir = Path("uploads")
+_uploads_dir.mkdir(exist_ok=True)
+(Path("uploads") / "payments").mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
 # Include routers
 app.include_router(auth.router, prefix=settings.API_V1_STR)

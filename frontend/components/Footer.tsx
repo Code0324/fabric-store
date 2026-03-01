@@ -13,7 +13,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           {/* Brand Section */}
           <div className="md:col-span-2">
-            <h2 className="text-3xl font-serif font-bold gradient-gold mb-4">AL Imran Fabrics</h2>
+            <h2
+              className="mb-4"
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '3px' }}
+            >
+              <span style={{ color: '#1A1A1A' }}>AL IMRAN </span>
+              <span style={{ color: '#B8963E' }}>FABRICS</span>
+            </h2>
             <p className="text-muted mb-6 leading-relaxed">
               Premium quality Pakistani fabrics crafted with elegance and tradition. Serving customers worldwide with
               authentic, hand-selected fabrics for every occasion since 2010.

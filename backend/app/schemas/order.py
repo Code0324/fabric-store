@@ -1,7 +1,7 @@
 """Order and OrderItem Pydantic v2 schemas."""
 from typing import List, Optional, Literal
 from datetime import datetime
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator
 
 from app.schemas.product import ProductResponse
 
@@ -41,19 +41,20 @@ class OrderItemResponse(BaseModel):
 # Order schemas
 # ---------------------------------------------------------------------------
 
-VALID_PAYMENT_METHODS = {"cod", "card"}
+VALID_PAYMENT_METHODS = {"cod", "easypaisa", "jazzcash"}
 VALID_STATUSES = {"pending", "confirmed", "shipped", "delivered", "cancelled"}
+VALID_PAYMENT_STATUSES = {"Pending", "Pending Verification", "Paid", "Rejected"}
 
 
 class OrderCreate(BaseModel):
-    """Input schema for creating an order."""
+    """Input schema for creating an order (JSON / COD-only legacy endpoint)."""
     items: List[OrderItemCreate]
     customer_name: str
     customer_phone: str
     customer_address: str
     customer_city: str
     customer_notes: Optional[str] = None
-    payment_method: Literal["cod", "card"] = "cod"
+    payment_method: Literal["cod", "easypaisa", "jazzcash"] = "cod"
 
     @field_validator("items")
     @classmethod
@@ -107,6 +108,8 @@ class OrderResponse(BaseModel):
     items: List[OrderItemResponse] = []
     total_amount: float
     payment_method: str
+    payment_status: str
+    payment_screenshot: Optional[str] = None
     status: str
     created_at: datetime
     updated_at: Optional[datetime] = None
@@ -128,5 +131,10 @@ class OrderListResponse(BaseModel):
 
 
 class OrderStatusUpdate(BaseModel):
-    """Input schema for updating an order's status."""
+    """Input schema for updating an order's fulfillment status (admin)."""
     status: Literal["pending", "confirmed", "shipped", "delivered", "cancelled"]
+
+
+class PaymentVerificationUpdate(BaseModel):
+    """Input schema for verifying / rejecting a manual payment (admin)."""
+    payment_status: Literal["Paid", "Rejected"]
