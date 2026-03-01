@@ -32,8 +32,6 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
-  if (!mounted) return null;
-
   const megaMenuCategories: NavCategory[] = [
     {
       name: "Men's Wear",
@@ -86,7 +84,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="bg-charcoal border-b border-border sticky top-0 z-50">
+    <header className="bg-charcoal border-b border-border sticky top-0 z-50" suppressHydrationWarning>
       <div className="container py-4">
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between">

@@ -6,6 +6,7 @@ import uuid
 
 from app.db.base import Base
 
+
 class Product(Base):
     __tablename__ = "products"
 
@@ -62,6 +63,38 @@ class Product(Base):
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    brand_rel = relationship("Brand", foreign_keys=[brand_id], lazy="joined")
+    category_rel = relationship("Category", foreign_keys=[category_id], lazy="joined")
+
+    # Property aliases used by ProductResponse / frontend
+    @property
+    def price(self) -> float:
+        return self.selling_price
+
+    @property
+    def stock(self) -> int:
+        return self.total_stock
+
+    @property
+    def is_active(self) -> bool:
+        return self.status == "active"
+
+    @property
+    def brand(self) -> str:
+        return self.brand_rel.name if self.brand_rel else ""
+
+    @property
+    def category(self) -> str:
+        return self.category_rel.name if self.category_rel else ""
+
+    @property
+    def compare_price(self):
+        """Original (undiscounted) price when a discount is applied."""
+        if self.discount_percentage and self.discount_percentage > 0:
+            return round(self.selling_price / (1 - self.discount_percentage / 100))
+        return None
 
     def __repr__(self):
         return f"<Product(id={self.id}, sku={self.sku}, name={self.name})>"

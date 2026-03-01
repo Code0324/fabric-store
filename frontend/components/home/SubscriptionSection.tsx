@@ -1,50 +1,62 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle, ArrowRight } from 'lucide-react';
 
 export const SubscriptionSection = () => {
   const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would handle the subscription here
+    if (!email) return;
+    setSubmitted(true);
     setEmail('');
+    setTimeout(() => setSubmitted(false), 4000);
   };
 
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-r from-[#E6007E] to-[#C80066]">
+    <section className="py-16 md:py-24 bg-charcoal border-t border-border">
       <div className="container px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <div className="mb-6 text-5xl">💌</div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Subscribe & Save 10%
+          <div className="w-14 h-14 bg-gold/10 border border-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Mail className="w-7 h-7 text-gold" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-cream mb-3">
+            Subscribe &amp; Save <span className="gradient-gold">10%</span>
           </h2>
-          <p className="text-[#FFF0F5] text-lg mb-8">
-            Get exclusive deals, new arrivals, and fashion tips delivered to your inbox
+          <p className="text-muted mb-8">
+            Get exclusive deals, new arrivals, and style inspiration delivered to your inbox.
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 mb-6">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-6 py-3 rounded-lg text-[#2E2E2E] placeholder-gray-400 outline-none focus:ring-2 focus:ring-white"
-              required
-            />
-            <button
-              type="submit"
-              className="px-8 py-3 bg-white text-[#E6007E] font-bold rounded-lg hover:bg-[#FFF0F5] transition-all whitespace-nowrap flex items-center justify-center gap-2"
-            >
-              <Mail className="w-5 h-5" />
-              Subscribe
-            </button>
-          </form>
+          {submitted ? (
+            <div className="flex items-center justify-center gap-2 text-success py-4">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-medium">You&apos;re subscribed! Check your inbox.</span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input flex-1"
+                required
+              />
+              <button
+                type="submit"
+                className="btn btn-primary flex items-center justify-center gap-2 whitespace-nowrap px-6"
+              >
+                Subscribe
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          )}
 
-          <p className="text-xs text-[#FFF0F5]">
-            <CheckCircle className="w-4 h-4 inline mr-2" />
-            We respect your privacy. Unsubscribe anytime.
+          <p className="text-xs text-muted mt-4 flex items-center justify-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5" />
+            No spam, ever. Unsubscribe anytime.
           </p>
         </div>
       </div>

@@ -24,6 +24,8 @@ export interface Product {
   stock: number;
   image_url?: string;
   is_featured: boolean;
+  is_bestseller?: boolean;
+  is_new_arrival?: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;

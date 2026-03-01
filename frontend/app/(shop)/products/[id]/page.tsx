@@ -98,17 +98,14 @@ export default function ProductDetailPage() {
           {/* Product Image */}
           <div className="relative">
             <div className="aspect-square bg-surface rounded-2xl overflow-hidden border border-border">
-              {product.image_url ? (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted text-sm">
-                  No image available
-                </div>
-              )}
+              <img
+                src={product.image_url || `https://picsum.photos/seed/${product.id}/600/600`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${product.id}/600/600`;
+                }}
+              />
             </div>
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2">

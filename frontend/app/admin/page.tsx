@@ -13,24 +13,28 @@ export default function AdminDashboard() {
     const loadStats = async () => {
       try {
         const [orders, products, users] = await Promise.all([
-          ordersAPI.list(0, 1),
-          productsAPI.list(0, 1),
-          usersAPI.list(0, 1),
+          ordersAPI.list(1, 100),
+          productsAPI.list(0, 500),
+          usersAPI.list(0, 500),
         ]);
 
         let totalRevenue = 0;
         let orderCount = 0;
 
-        // For demonstration, using limited data
-        if (orders.data && Array.isArray(orders.data)) {
-          orderCount = orders.data.length || 0;
-          totalRevenue = orders.data.reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0);
-        }
+        // ordersAPI.list returns AxiosResponse; productsAPI/usersAPI return unwrapped data
+        const ordersData = Array.isArray(orders.data)
+          ? orders.data
+          : (orders.data as any)?.items ?? [];
+        orderCount = ordersData.length;
+        totalRevenue = ordersData.reduce(
+          (sum: number, order: any) => sum + (order.total_amount || 0),
+          0,
+        );
 
         setStats({
           orders: orderCount,
-          products: products.data?.length || 0,
-          users: users.data?.length || 0,
+          products: Array.isArray(products) ? products.length : 0,
+          users: Array.isArray(users.data) ? users.data.length : 0,
           revenue: totalRevenue,
         });
       } catch (err) {
