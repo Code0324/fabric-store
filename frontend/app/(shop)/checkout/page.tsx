@@ -25,12 +25,12 @@ const PAYMENT_INFO: Record<'easypaisa' | 'jazzcash', PaymentDetails> = {
   easypaisa: {
     label: 'Easypaisa',
     accountTitle: 'Al Imran Fabrics',
-    number: '03XX-XXXXXXX',  // Replace with real number
+    number: '0324-9208788',
   },
   jazzcash: {
     label: 'JazzCash',
     accountTitle: 'Al Imran Fabrics',
-    number: '03XX-XXXXXXX',  // Replace with real number
+    number: '0324-9208788',
   },
 };
 

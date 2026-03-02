@@ -52,7 +52,7 @@ export default function RegisterPage() {
       });
 
       // Store auth state in Zustand (persisted to localStorage)
-      setToken(response.data.access_token);
+      setToken(response.data.token.access_token);
       setUser(response.data.user);
 
       // Show brief success message before redirecting

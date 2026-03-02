@@ -4,6 +4,81 @@
 
 import { CartItem } from './types';
 
+// ─── Admin Utilities ─────────────────────────────────────────────────────────
+
+/**
+ * Format amount as Pakistani Rupees (alias for formatPKR — preferred in admin)
+ */
+export function formatCurrency(amount: number): string {
+  return formatPKR(amount);
+}
+
+/**
+ * Generate a unique SKU for new products
+ * Format: ALI-XXXX-YYYY where XXXX is random alpha and YYYY is random numeric
+ */
+export function generateSKU(): string {
+  const alpha = Array.from({ length: 4 }, () =>
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 26))
+  ).join('');
+  const numeric = String(Math.floor(1000 + Math.random() * 9000));
+  return `ALI-${alpha}-${numeric}`;
+}
+
+/**
+ * Check if a product's stock is low
+ */
+export function isLowStock(stock: number, threshold = 5): boolean {
+  return stock >= 0 && stock <= threshold;
+}
+
+/**
+ * Generate a WhatsApp deep-link for sending an order update to a customer
+ */
+export function generateWhatsAppLink(
+  phone: string,
+  message: string
+): string {
+  const digits = phone.replace(/\D/g, '');
+  const normalized = digits.startsWith('92') ? digits : digits.startsWith('0') ? `92${digits.slice(1)}` : digits;
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+}
+
+/**
+ * Generate a WhatsApp message for an order status update
+ */
+export function generateOrderUpdateMessage(order: {
+  id: string;
+  customerName: string;
+  status: string;
+  totalAmount: number;
+  trackingNumber?: string;
+}): string {
+  const statusMessages: Record<string, string> = {
+    confirmed: 'Your order has been confirmed and is being processed.',
+    shipped:   'Great news! Your order has been shipped and is on its way.',
+    delivered: 'Your order has been delivered. Thank you for shopping with us!',
+    cancelled: 'Your order has been cancelled. Please contact us for details.',
+  };
+
+  const trackingLine = order.trackingNumber
+    ? `\nTracking #: ${order.trackingNumber}`
+    : '';
+
+  return `*AL Imran Fabrics - Order Update*
+
+Hi ${order.customerName}!
+
+Order ID: #${order.id.substring(0, 8).toUpperCase()}${trackingLine}
+Amount: ${formatPKR(order.totalAmount)}
+Status: *${order.status.charAt(0).toUpperCase() + order.status.slice(1)}*
+
+${statusMessages[order.status] ?? 'Your order status has been updated.'}
+
+For any queries, reply to this message or call us.
+— AL Imran Fabrics Team`;
+}
+
 /**
  * Format number as Pakistani Rupees (PKR)
  */

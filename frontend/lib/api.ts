@@ -70,7 +70,7 @@ api.interceptors.response.use(
         // Only redirect if not already on auth pages
         const path = window.location.pathname;
         if (path !== '/login' && path !== '/register') {
-          window.location.href = '/login';
+          window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
         }
       }
     }

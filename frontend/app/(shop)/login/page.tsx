@@ -12,19 +12,24 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const setUser = useAuthStore((state) => state.setUser);
   const setToken = useAuthStore((state) => state.setToken);
+  const logout = useAuthStore((state) => state.logout);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const token = useAuthStore((state) => state.token);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({ email: '', password: '' });
 
-  // If already logged in, redirect immediately
+  // If already logged in with a valid token, redirect away
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && token) {
       const redirectTo = searchParams.get('redirect') || '/products';
       router.replace(redirectTo);
+    } else if (isLoggedIn && !token) {
+      // Stale state: marked as logged in but no token — clear it
+      logout();
     }
-  }, [isLoggedIn, router, searchParams]);
+  }, [isLoggedIn, token, logout, router, searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,7 +47,7 @@ function LoginForm() {
       });
 
       // Store auth state in Zustand (persisted to localStorage)
-      setToken(response.data.access_token);
+      setToken(response.data.token.access_token);
       setUser(response.data.user);
 
       // Redirect to previous page if specified, otherwise go to products

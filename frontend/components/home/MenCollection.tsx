@@ -19,24 +19,23 @@ function CategoryImage({ src, alt }: { src: string; alt: string }) {
     );
   }
   return (
-    <Image
-      src={src}
-      alt={alt}
-      fill
-      sizes="72px"
-      className="object-cover rounded-full transition-transform duration-300 group-hover:scale-110"
-      onError={() => setFailed(true)}
-    />
+  <Image
+  src={src}
+  alt={alt}
+  fill
+  sizes="110px"
+  className="object-cover rounded-full object-[center_65%] transition-transform duration-300 group-hover:scale-110"
+  onError={() => setFailed(true)}
+/>
   );
 }
 
 const MEN_CATEGORIES = [
-  { image: '/images/categories/stitched.jpg',   label: 'Stitched',    href: '/products?category=Women+Stitched+Pret' },
-  { image: '/images/categories/stitched.jpg',   label: 'Unstitched',  href: '/products?category=Women+Lawn+Unstitched' },
-  { image: '/images/categories/chiffon.jpg',    label: 'Chiffon',     href: '/products?category=Chiffon' },
-  { image: '/images/categories/printed.jpg',    label: 'Printed',     href: '/products?category=Printed' },
-  { image: '/images/categories/embroiderd.jpg', label: 'Embroidered', href: '/products?category=Women%27s+Embroidered+Unstitched' },
-  { image: '/images/categories/luxury.jpg',     label: 'Luxury',      href: '/products?category=Luxury+Formal' },
+  { image: '/images/categories/men-stitched.jpg',   label: 'Stitched',    href: '/products?category=men+Stitched' },
+  { image: '/images/categories/men-unstitched.jpg',   label: 'Unstitched',  href: '/products?category=men+Unstitched' },
+  { image: '/images/categories/eash-n-wear.jpg',    label: 'wash-n-wear',     href: '/products?category=eash-n-wear' },
+  { image: '/images/categories/cotton.jpg',    label: 'cotton',     href: '/products?category=cotton' },
+ 
 ];
 
 const ITEMS_PER_PAGE = 8;
@@ -62,12 +61,12 @@ export const MenCollection = ({
     <section style={{ background: '#FFFFFF' }}>
       {/* Banner */}
       <div
-        className="relative flex items-center justify-end overflow-hidden"
+        className="relative flex items-center justify-start overflow-hidden"
         style={{
-          height: '280px',
+          height: '460px',
           backgroundImage: 'url(/images/men-banner.jpg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'top',
           backgroundColor: '#F5F0E8',
         }}
       >
@@ -103,10 +102,10 @@ export const MenCollection = ({
         </div>
       </div>
 
-      {/* Category Images */}
-      <div style={{ background: '#FAF7F2', borderBottom: '1px solid #E0D8CC' }}>
-        <div className="container px-4 py-6">
-          <div className="flex items-start justify-start gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-1">
+       {/* Category Images with extra top margin */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC', marginTop: '2rem' }}>
+        <div className="container px-4 py-8 mt-12"> {/* Added mt-12 for extra space */}
+          <div className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-1">
             {MEN_CATEGORIES.map(({ image, label, href }) => (
               <Link
                 key={label}
@@ -116,8 +115,8 @@ export const MenCollection = ({
                 <div
                   className="relative overflow-hidden rounded-full transition-all duration-300"
                   style={{
-                    width: '72px',
-                    height: '72px',
+                    width: '100px',
+                    height: '100px',
                     border: '2px solid #E0D8CC',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                     transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
