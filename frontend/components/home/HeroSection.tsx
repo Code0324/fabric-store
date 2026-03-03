@@ -5,13 +5,10 @@ import Link from 'next/link';
 export const HeroSection = () => {
   return (
     <section
-      className="relative overflow-hidden w-full"
-      style={{
-        minHeight: '88vh',
-        position: 'relative',
-      }}
+      className="relative overflow-hidden w-full min-h-[65vh] md:min-h-[88vh]"
+      style={{ position: 'relative' }}
     >
-      {/* Full-width background image — Sapphire RTW editorial, 2000×1000 */}
+      {/* Full-width background image */}
       <img
         src="/images/hero-sapphire.png"
         alt="Eid Collection"
@@ -22,25 +19,32 @@ export const HeroSection = () => {
         }}
       />
 
-      {/* Full dark overlay so text is always legible regardless of image */}
+      {/* Overlay — uniform dark on mobile, directional on desktop */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none md:hidden"
+        style={{ background: 'rgba(8,6,4,0.60)', zIndex: 1 }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none hidden md:block"
         style={{
-          background: 'linear-gradient(to left, rgba(8,6,4,0.78) 0%, rgba(8,6,4,0.55) 38%, rgba(8,6,4,0.15) 70%, rgba(0,0,0,0) 100%)',
+          background: 'linear-gradient(to left, rgba(8,6,4,0.82) 0%, rgba(8,6,4,0.55) 38%, rgba(8,6,4,0.15) 70%, rgba(0,0,0,0) 100%)',
           zIndex: 1,
         }}
       />
 
-      <div className="container relative flex justify-end items-center h-full" style={{ zIndex: 2 }}>
-        {/* Right-aligned text — light on dark */}
-        <div style={{ maxWidth: '520px', padding: '5rem 1rem' }}>
+      <div className="container relative flex md:justify-end justify-center items-center min-h-[65vh] md:min-h-[88vh]" style={{ zIndex: 2 }}>
+        {/* Centered on mobile, right-aligned on desktop */}
+        <div className="text-center md:text-left w-full md:w-auto" style={{ maxWidth: '520px', padding: '3.5rem 0.5rem' }}>
           <p style={{
             fontFamily: "'Jost', sans-serif",
             fontSize: '11px',
             letterSpacing: '3px',
             textTransform: 'uppercase',
             color: '#D4AF5A',
-            marginBottom: '1.25rem',
+            marginBottom: '1rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
             borderLeft: '2px solid #D4AF5A',
             paddingLeft: '10px',
           }}>
@@ -49,12 +53,12 @@ export const HeroSection = () => {
           <h1
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(52px, 6vw, 76px)',
+              fontSize: 'clamp(42px, 10vw, 76px)',
               fontWeight: 300,
               lineHeight: 1.0,
               color: '#F5F0E8',
               letterSpacing: '3px',
-              marginBottom: '1rem',
+              marginBottom: '0.75rem',
               textShadow: '0 2px 20px rgba(0,0,0,0.5)',
             }}
           >
@@ -67,10 +71,10 @@ export const HeroSection = () => {
           <p
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: '26px',
+              fontSize: 'clamp(18px, 4vw, 26px)',
               fontWeight: 400,
               color: '#F5F0E8',
-              marginBottom: '0.75rem',
+              marginBottom: '0.5rem',
             }}
           >
             UP TO <em style={{ color: '#D4AF5A', fontStyle: 'italic' }}>70% OFF</em>
@@ -78,24 +82,23 @@ export const HeroSection = () => {
           <p
             style={{
               fontFamily: "'Jost', sans-serif",
-              fontSize: '13px',
+              fontSize: '12px',
               letterSpacing: '1px',
               color: 'rgba(245,240,232,0.70)',
-              maxWidth: '400px',
               lineHeight: 1.9,
-              marginBottom: '2.5rem',
+              marginBottom: '2rem',
             }}
           >
             Celebrate Eid in style — exclusive stitched &amp; unstitched collections at irresistible prices.
           </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/products" className="btn btn-primary" style={{ padding: '14px 40px' }}>
+          <div className="flex justify-center md:justify-start" style={{ gap: '0.75rem', flexWrap: 'wrap' }}>
+            <Link href="/products" className="btn btn-primary" style={{ padding: '12px 32px' }}>
               Shop Now
             </Link>
             <Link
               href="/products"
               style={{
-                padding: '14px 40px',
+                padding: '12px 32px',
                 border: '1px solid rgba(212,175,90,0.6)',
                 color: '#D4AF5A',
                 fontFamily: "'Jost', sans-serif",
@@ -106,22 +109,22 @@ export const HeroSection = () => {
                 transition: 'all 0.2s',
               }}
             >
-              Explore Collection
+              Explore
             </Link>
           </div>
-          <div style={{ display: 'flex', gap: '1.75rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
-            {['Free Shipping ≥ PKR 2,000', '100% Authentic Fabrics', 'Easy Installments'].map(
+          <div className="flex justify-center md:justify-start flex-wrap" style={{ gap: '1rem', marginTop: '2rem' }}>
+            {['Free Shipping ≥ PKR 2,000', '100% Authentic', 'Easy Installments'].map(
               (text) => (
                 <span
                   key={text}
                   style={{
                     fontFamily: "'Jost', sans-serif",
-                    fontSize: '11px',
+                    fontSize: '10px',
                     letterSpacing: '0.5px',
                     color: 'rgba(245,240,232,0.55)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '5px',
                   }}
                 >
                   <span style={{ color: '#D4AF5A' }}>✦</span>

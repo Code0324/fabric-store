@@ -59,38 +59,43 @@ export const MenCollection = ({
 
   return (
     <section style={{ background: '#FFFFFF' }}>
-      {/* Banner — Limelight Men Kurta editorial, 1200×330 */}
+      {/* Banner */}
       <div
-        className="relative flex items-center justify-start overflow-hidden"
+        className="relative flex items-center justify-center md:justify-start overflow-hidden"
         style={{
-          height: '460px',
+          height: 'clamp(220px, 42vw, 460px)',
           backgroundImage: 'url(/images/men-banner-new.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundColor: '#1A1A1A',
         }}
       >
-        {/* Dark left overlay so right side shows model clearly */}
+        {/* Mobile overlay — uniform dark */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 md:hidden"
+          style={{ background: 'rgba(15,12,8,0.65)' }}
+        />
+        {/* Desktop overlay — directional */}
+        <div
+          className="absolute inset-0 hidden md:block"
           style={{
             background:
               'linear-gradient(to right, rgba(15,12,8,0.88) 0%, rgba(15,12,8,0.60) 35%, rgba(15,12,8,0.15) 70%, rgba(0,0,0,0) 100%)',
           }}
         />
-        <div className="relative z-10 px-8 md:px-16 lg:px-24 text-left">
-          <p className="section-label" style={{ marginBottom: '10px', color: '#D4AF5A', borderColor: '#D4AF5A' }}>
+        <div className="relative z-10 text-center md:text-left px-6 md:px-16 lg:px-24">
+          <p className="section-label" style={{ marginBottom: '8px', color: '#D4AF5A', borderColor: '#D4AF5A' }}>
             New Arrivals
           </p>
           <h2
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(36px, 5vw, 60px)',
+              fontSize: 'clamp(26px, 5vw, 60px)',
               fontWeight: 300,
               fontStyle: 'italic',
               color: '#F5F0E8',
               lineHeight: 1.1,
-              marginBottom: '20px',
+              marginBottom: '10px',
               letterSpacing: '2px',
               textShadow: '0 2px 12px rgba(0,0,0,0.4)',
             }}
@@ -99,24 +104,23 @@ export const MenCollection = ({
           </h2>
           <p style={{
             fontFamily: "'Jost', sans-serif",
-            fontSize: '13px',
+            fontSize: '12px',
             letterSpacing: '1.5px',
             color: 'rgba(245,240,232,0.75)',
-            marginBottom: '28px',
-            maxWidth: '360px',
+            marginBottom: '18px',
           }}>
-            Premium Shalwar Kameez — Stitched & Unstitched
+            Premium Shalwar Kameez — Stitched &amp; Unstitched
           </p>
-          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '24px', color: '#D4AF5A' }}>✦</div>
-          <Link href="/products" className="btn btn-primary" style={{ padding: '12px 36px' }}>
+          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '16px', color: '#D4AF5A' }}>✦</div>
+          <Link href="/products" className="btn btn-primary" style={{ padding: '10px 28px' }}>
             View All
           </Link>
         </div>
       </div>
 
-       {/* Category Images with extra top margin */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC', marginTop: '2rem' }}>
-        <div className="container px-4 py-8 mt-12"> {/* Added mt-12 for extra space */}
+      {/* Category Icons */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC' }}>
+        <div className="container px-4 py-6 md:py-8">
           <div className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-1">
             {MEN_CATEGORIES.map(({ image, label, href, pos }) => (
               <Link

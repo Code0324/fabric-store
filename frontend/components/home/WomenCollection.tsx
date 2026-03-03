@@ -70,11 +70,11 @@ export const WomenCollection = ({
 
   return (
     <section style={{ background: '#FAF7F2' }}>
-      {/* Banner — Limelight Silk editorial, 2400×750 */}
+      {/* Banner */}
       <div
-        className="relative flex items-center justify-end overflow-hidden"
+        className="relative flex items-center justify-center md:justify-end overflow-hidden"
         style={{
-          height: '500px',
+          height: 'clamp(240px, 45vw, 500px)',
           backgroundImage: 'url(/images/women-banner-silk.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center 30%',
@@ -82,48 +82,53 @@ export const WomenCollection = ({
           backgroundColor: '#F5E8D8',
         }}
       >
-        {/* Right overlay — lighter, more vibrant, lets the image breathe */}
+        {/* Mobile overlay — uniform */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 md:hidden"
+          style={{ background: 'rgba(250,247,242,0.60)' }}
+        />
+        {/* Desktop overlay — directional */}
+        <div
+          className="absolute inset-0 hidden md:block"
           style={{
             background:
               'linear-gradient(to left, rgba(250,247,242,0.85) 0%, rgba(250,247,242,0.55) 30%, rgba(250,247,242,0.10) 65%, rgba(0,0,0,0) 100%)',
           }}
         />
 
-        <div className="relative z-10 px-8 md:px-16 lg:px-24">
-          <p className="section-label" style={{ marginBottom: '10px' }}>
+        <div className="relative z-10 text-center md:text-left px-6 md:px-16 lg:px-24">
+          <p className="section-label" style={{ marginBottom: '8px' }}>
             New Season
           </p>
 
           <h2
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(40px, 6vw, 64px)',
+              fontSize: 'clamp(28px, 6vw, 64px)',
               fontWeight: 300,
               fontStyle: 'italic',
               color: '#1A1A1A',
               lineHeight: 1.1,
-              marginBottom: '20px',
+              marginBottom: '14px',
               letterSpacing: '1px',
             }}
           >
             Women&apos;s Collection
           </h2>
 
-          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '20px' }}>
+          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '14px' }}>
             ✦
           </div>
 
-          <Link href="/products" className="btn btn-secondary" style={{ padding: '12px 32px' }}>
+          <Link href="/products" className="btn btn-secondary" style={{ padding: '10px 28px' }}>
             View All
           </Link>
         </div>
       </div>
 
-      {/* Category Images with extra top margin */}
-      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC', marginTop: '2rem' }}>
-        <div className="container px-4 py-8 mt-12"> {/* Added mt-12 for extra space */}
+      {/* Category Icons */}
+      <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC' }}>
+        <div className="container px-4 py-6 md:py-8">
           <div className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-1">
             {WOMEN_CATEGORIES.map(({ image, label, href, pos }) => (
               <Link
