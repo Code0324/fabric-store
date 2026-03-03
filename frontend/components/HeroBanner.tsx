@@ -10,7 +10,7 @@ export default function HeroBanner() {
       {/* Hero Image */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <Image
-          src="/images/hero-banner.jpeg"
+          src="/images/hero-banner.jpg"
           alt="Hero Banner"
           fill
           className="object-none object-left-bottom scale-110 md:scale-105"
