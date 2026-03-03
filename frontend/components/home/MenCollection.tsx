@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import type { Product } from '@/lib/types';
 
-function CategoryImage({ src, alt }: { src: string; alt: string }) {
+function CategoryImage({ src, alt, pos = 'center 15%' }: { src: string; alt: string; pos?: string }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
@@ -19,23 +19,23 @@ function CategoryImage({ src, alt }: { src: string; alt: string }) {
     );
   }
   return (
-  <Image
-  src={src}
-  alt={alt}
-  fill
-  sizes="110px"
-  className="object-cover rounded-full object-[center_65%] transition-transform duration-300 group-hover:scale-110"
-  onError={() => setFailed(true)}
-/>
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes="110px"
+      className="object-cover rounded-full transition-transform duration-300 group-hover:scale-110"
+      style={{ objectPosition: pos }}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
 const MEN_CATEGORIES = [
-  { image: '/images/categories/men-stitched.jpg',   label: 'Stitched',    href: '/products?category=men+Stitched' },
-  { image: '/images/categories/men-unstitched.jpg',   label: 'Unstitched',  href: '/products?category=men+Unstitched' },
-  { image: '/images/categories/eash-n-wear.jpg',    label: 'wash-n-wear',     href: '/products?category=eash-n-wear' },
-  { image: '/images/categories/cotton.jpg',    label: 'cotton',     href: '/products?category=cotton' },
- 
+  { image: '/images/categories/cat-men-stitched.jpg',   label: 'Shalwar Kameez', href: '/products?category=Men+Shalwar+Kameez', pos: 'center 15%' },
+  { image: '/images/categories/cat-men-kurta.jpg',      label: 'Kurta',          href: '/products?category=Men+Kurta',          pos: 'center 15%' },
+  { image: '/images/categories/cat-men-unstitched.jpg', label: 'Unstitched',     href: '/products?category=Men+Shalwar+Kameez', pos: 'center 10%' },
+  { image: '/images/categories/cat-men-formal.jpg',     label: 'Formal',         href: '/products?category=Men+Shalwar+Kameez', pos: 'center 15%' },
 ];
 
 const ITEMS_PER_PAGE = 8;
@@ -59,44 +59,56 @@ export const MenCollection = ({
 
   return (
     <section style={{ background: '#FFFFFF' }}>
-      {/* Banner */}
+      {/* Banner — Limelight Men Kurta editorial, 1200×330 */}
       <div
         className="relative flex items-center justify-start overflow-hidden"
         style={{
           height: '460px',
-          backgroundImage: 'url(/images/men-banner.jpg)',
+          backgroundImage: 'url(/images/men-banner-new.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'top',
-          backgroundColor: '#F5F0E8',
+          backgroundPosition: 'center center',
+          backgroundColor: '#1A1A1A',
         }}
       >
-        {/* Ivory gradient — text side (right) */}
+        {/* Dark left overlay so right side shows model clearly */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(to left, rgba(245,240,232,0.92) 0%, rgba(245,240,232,0.68) 40%, rgba(245,240,232,0.10) 100%)',
+            background:
+              'linear-gradient(to right, rgba(15,12,8,0.88) 0%, rgba(15,12,8,0.60) 35%, rgba(15,12,8,0.15) 70%, rgba(0,0,0,0) 100%)',
           }}
         />
-        <div className="relative z-10 px-8 md:px-16 lg:px-24 text-right">
-          <p className="section-label" style={{ marginBottom: '10px' }}>
+        <div className="relative z-10 px-8 md:px-16 lg:px-24 text-left">
+          <p className="section-label" style={{ marginBottom: '10px', color: '#D4AF5A', borderColor: '#D4AF5A' }}>
             New Arrivals
           </p>
           <h2
             style={{
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(36px, 5vw, 56px)',
+              fontSize: 'clamp(36px, 5vw, 60px)',
               fontWeight: 300,
               fontStyle: 'italic',
-              color: '#1A1A1A',
+              color: '#F5F0E8',
               lineHeight: 1.1,
               marginBottom: '20px',
-              letterSpacing: '1px',
+              letterSpacing: '2px',
+              textShadow: '0 2px 12px rgba(0,0,0,0.4)',
             }}
           >
             Men&apos;s Collection
           </h2>
-          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '20px', marginLeft: 'auto' }}>✦</div>
-          <Link href="/products" className="btn btn-primary" style={{ padding: '10px 28px' }}>
+          <p style={{
+            fontFamily: "'Jost', sans-serif",
+            fontSize: '13px',
+            letterSpacing: '1.5px',
+            color: 'rgba(245,240,232,0.75)',
+            marginBottom: '28px',
+            maxWidth: '360px',
+          }}>
+            Premium Shalwar Kameez — Stitched & Unstitched
+          </p>
+          <div className="ornament-divider" style={{ maxWidth: '200px', marginBottom: '24px', color: '#D4AF5A' }}>✦</div>
+          <Link href="/products" className="btn btn-primary" style={{ padding: '12px 36px' }}>
             View All
           </Link>
         </div>
@@ -106,7 +118,7 @@ export const MenCollection = ({
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC', marginTop: '2rem' }}>
         <div className="container px-4 py-8 mt-12"> {/* Added mt-12 for extra space */}
           <div className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-1">
-            {MEN_CATEGORIES.map(({ image, label, href }) => (
+            {MEN_CATEGORIES.map(({ image, label, href, pos }) => (
               <Link
                 key={label}
                 href={href}
@@ -130,7 +142,7 @@ export const MenCollection = ({
                     (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
                   }}
                 >
-                  <CategoryImage src={image} alt={label} />
+                  <CategoryImage src={image} alt={label} pos={pos} />
                 </div>
                 <span
                   style={{

@@ -8,21 +8,22 @@ export default function HeroBanner() {
   return (
     <div className="relative overflow-hidden min-h-[600px] md:min-h-[700px] flex items-center justify-center bg-dark-gradient">
       {/* Hero Image */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
         <Image
-          src="/images/hero-banner.jpg"
+          src="/images/hero-banner.jpeg"
           alt="Hero Banner"
           fill
-          className="object-cover"
+          className="object-none object-left-bottom scale-110 md:scale-105"
           priority
         />
       </div>
 
       {/* Optional: Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-10 left-10 w-72 h-72 bg-gold rounded-full mix-blend-screen animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-gold-dark rounded-full mix-blend-screen animate-pulse delay-700"></div>
       </div>
+
 
       {/* Content */}
       <div className="container relative z-10 text-center py-20">

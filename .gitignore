@@ -63,3 +63,5 @@ __pycache__/
 *.py[cod]
 *.sqlite
 *.db
+.vercel
+.env*.local

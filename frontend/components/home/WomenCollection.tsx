@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import type { Product } from '@/lib/types';
 
-function CategoryImage({ src, alt }: { src: string; alt: string }) {
+function CategoryImage({ src, alt, pos = 'center 15%' }: { src: string; alt: string; pos?: string }) {
   const [failed, setFailed] = useState(false);
 
   if (failed) {
@@ -27,28 +27,26 @@ function CategoryImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-  <Image
-  src={src}
-  alt={alt}
-  fill
-  sizes="110px"
-  className="object-cover rounded-full object-[center_65%] transition-transform duration-300 group-hover:scale-110"
-  onError={() => setFailed(true)}
-/>
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes="110px"
+      className="object-cover rounded-full transition-transform duration-300 group-hover:scale-110"
+      style={{ objectPosition: pos }}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
 const WOMEN_CATEGORIES = [
-  { image: '/images/categories/stitched.jpg', label: 'Stitched', href: '/products?category=Women+Stitched+Pret' },
-  { image: '/images/categories/stitched.jpg', label: 'Unstitched', href: '/products?category=Women+Lawn+Unstitched' },
-  { image: '/images/categories/1-piece.jpg', label: '1 Piece', href: '/products?category=1-piece' },
-  { image: '/images/categories/2-pieces.jpg', label: '2 Pieces', href: '/products?category=2-pieces' },
-  { image: '/images/categories/3-pieces.jpg', label: '3 Pieces', href: '/products?category=3-pieces' },
-  { image: '/images/categories/chickenkar.jpg', label: 'Chickenkari', href: '/products?category=Chickenkari' },
-  { image: '/images/categories/chiffon.jpg', label: 'Chiffon', href: '/products?category=Chiffon' },
-  { image: '/images/categories/printed.jpg', label: 'Printed', href: '/products?category=Printed' },
-  { image: '/images/categories/embroiderd.jpg', label: 'Embroidered', href: '/products?category=Women%27s+Embroidered+Unstitched' },
-  { image: '/images/categories/luxury.jpg', label: 'Luxury', href: '/products?category=Luxury+Formal' },
+  { image: '/images/categories/cat-lawn.jpg',       label: 'Lawn',        href: '/products?category=Women+Lawn+Unstitched',               pos: 'center 15%' },
+  { image: '/images/categories/cat-stitched.jpg',   label: 'Stitched',    href: '/products?category=Women+Stitched+Pret',                 pos: 'center 10%' },
+  { image: '/images/categories/cat-unstitched.jpg', label: 'Unstitched',  href: '/products?category=Women+Lawn+Unstitched',               pos: 'center 10%' },
+  { image: '/images/categories/cat-embroidered.jpg',label: 'Embroidered', href: '/products?category=Women%27s+Embroidered+Unstitched',    pos: 'center 10%' },
+  { image: '/images/categories/cat-printed.jpg',    label: 'Printed',     href: '/products',                                              pos: 'center 10%' },
+  { image: '/images/categories/cat-luxury.jpg',     label: 'Luxury',      href: '/products?category=Luxury+Formal',                       pos: 'center 10%' },
+  { image: '/images/categories/chiffon.jpg',        label: 'Chiffon',     href: '/products',                                              pos: 'center 10%' },
 ];
 
 const ITEMS_PER_PAGE = 8;
@@ -72,32 +70,24 @@ export const WomenCollection = ({
 
   return (
     <section style={{ background: '#FAF7F2' }}>
-      {/* Banner */}
+      {/* Banner — Limelight Silk editorial, 2400×750 */}
       <div
         className="relative flex items-center justify-end overflow-hidden"
         style={{
-          height: '480px',
-          backgroundImage: 'url(/images/women-banner.jpg)',
+          height: '500px',
+          backgroundImage: 'url(/images/women-banner-silk.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center 30%',
           backgroundRepeat: 'no-repeat',
-          backgroundColor: '#F5F0E8',
-          filter: 'brightness(90%) contrast(105%)', // Less opacity, enhanced contrast
+          backgroundColor: '#F5E8D8',
         }}
       >
-        {/* Overlay with reduced opacity */}
+        {/* Right overlay — lighter, more vibrant, lets the image breathe */}
         <div
           className="absolute inset-0"
           style={{
-            background: `
-              linear-gradient(
-                to left,
-                rgba(250,247,242,0.90) 0%,
-                rgba(250,247,242,0.70) 35%,
-                rgba(250,247,242,0.25) 75%,
-                rgba(0,0,0,0.05) 100%
-              )
-            `,
+            background:
+              'linear-gradient(to left, rgba(250,247,242,0.85) 0%, rgba(250,247,242,0.55) 30%, rgba(250,247,242,0.10) 65%, rgba(0,0,0,0) 100%)',
           }}
         />
 
@@ -135,7 +125,7 @@ export const WomenCollection = ({
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #E0D8CC', marginTop: '2rem' }}>
         <div className="container px-4 py-8 mt-12"> {/* Added mt-12 for extra space */}
           <div className="flex items-start justify-start gap-4 overflow-x-auto scrollbar-hide pb-1">
-            {WOMEN_CATEGORIES.map(({ image, label, href }) => (
+            {WOMEN_CATEGORIES.map(({ image, label, href, pos }) => (
               <Link
                 key={label}
                 href={href}
@@ -161,7 +151,7 @@ export const WomenCollection = ({
                       '0 4px 14px rgba(0,0,0,0.08)';
                   }}
                 >
-                  <CategoryImage src={image} alt={label} />
+                  <CategoryImage src={image} alt={label} pos={pos} />
                 </div>
 
                 <span
