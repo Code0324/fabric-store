@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
     # API
     API_V1_STR: str = "/api/v1"
-    ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1"]
+    ALLOWED_HOSTS: list[str] = ["*"]
 
     # WhatsApp
     WHATSAPP_NUMBER: str = "+92300XXXXXXX"

@@ -4,12 +4,17 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 
-# Create async engine for SQLite (local development without Docker)
+# Ensure async-compatible URL scheme for PostgreSQL
+_db_url = settings.DATABASE_URL
+if _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif _db_url.startswith("postgres://"):
+    _db_url = _db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    _db_url,
     echo=settings.DEBUG,
     future=True,
-    connect_args={"check_same_thread": False},
 )
 
 # Create async session factory
