@@ -50,12 +50,7 @@ app.include_router(orders.router, prefix=settings.API_V1_STR)
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {
-        "status": "healthy",
-        "app": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-    }
+    return {"status": "ok"}
 
 
 # Root endpoint

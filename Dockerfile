@@ -1,6 +1,8 @@
 # Use official Python runtime as base image
 FROM python:3.12-slim
 
+ARG CACHEBUST=1
+
 # Set working directory
 WORKDIR /app
 
@@ -33,9 +35,5 @@ RUN useradd -m -u 1000 appuser && \
 
 USER appuser
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8000/health')" || exit 1
-
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run application (Railway injects $PORT at runtime)
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
